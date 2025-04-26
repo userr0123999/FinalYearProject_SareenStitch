@@ -1,0 +1,112 @@
+{% extends 'mytemplates/index.html' %}
+{% load static %}
+{% load humanize %}
+
+{% block content %}
+<div style="max-width: 700px; margin: 40px auto; background: white; padding: 30px; border-radius: 16px; box-shadow: 0 8px 24px rgba(0,0,0,0.1); text-align: center;">
+
+  <!-- Product Image -->
+  <img src="{{ product.image.url }}" alt="{{ product.product_name }}"
+       style="max-width: 100%; height: auto; border-radius: 10px; object-fit: contain; margin-bottom: 20px;">
+
+  <!-- Product Name -->
+  <h2 style="font-weight: bold; font-size: 24px; color: #3c1361;">{{ product.product_name }}</h2>
+  <p style="font-size: 18px; color: #444;">Rs. {{ product.price|intcomma }}</p>
+
+  <!-- Metadata -->
+  <p style="margin-top: 8px; font-size: 14px; color: gray;">Category: {{ product.category }}</p>
+  <p style="font-size: 14px; color: gray;">Sizes:
+    {% for size in product.size.all %}
+      {{ size.label }}{% if not forloop.last %}, {% endif %}
+    {% endfor %}
+  </p>
+  <p style="font-size: 14px; color: gray;">Stock: {{ product.quantity }}</p>
+
+  <!-- Description -->
+  <p style="margin-top: 15px; font-size: 15px; color: #555; line-height: 1.5;">{{ product.description }}</p>
+
+  <!-- Buttons -->
+  <div style="margin-top: 20px;">
+    <a href="{% url 'add_to_cart' product.id %}" title="Add to Cart" style="color: #000; font-size: 20px; margin: 0 12px;"><i class="fas fa-shopping-cart"></i></a>
+    <a href="{% url 'add_to_wishlist' product.id %}" title="Add to Wishlist" style="color: #e91e63; font-size: 20px; margin: 0 12px;"><i class="fas fa-heart"></i></a>
+  </div>
+
+  <!-- Buy Now -->
+  <button onclick="openBuyNowModal('{{ product.id }}', '{{ product.product_name }}', '{{ product.price }}')"
+          style="margin-top: 20px; background: black; color: white; padding: 10px 24px; border-radius: 10px; font-weight: bold;">
+    🛒 Buy Now
+  </button>
+
+  <!-- Back -->
+  <div style="margin-top: 30px;">
+    <a href="{% url 'vendor_store' vendor_id %}"
+   style="text-decoration: none; padding: 10px 20px; background: #eee; color: #3c1361; border-radius: 8px;">
+   ← Back to Vendor Store
+</a>
+
+
+  </div>
+</div>
+
+<!-- ✅ Buy Now Modal -->
+<div class="modal fade" id="buyNowModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content p-4 shadow rounded-4">
+      <div class="modal-header border-0">
+        <h5 class="modal-title fw-bold">🛍️ Buy Now</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <form method="POST" action="{% url 'buy_now_checkout' %}">
+        {% csrf_token %}
+        <input type="hidden" name="product_id" id="modalProductId">
+        <input type="hidden" id="modalBasePrice">
+        <div class="modal-body">
+          <p><strong id="modalProductName"></strong> - Rs. <span id="modalProductPrice"></span></p>
+
+          <input type="number" name="quantity" id="modalQuantity" min="1" value="1" class="form-control mb-2" required>
+          <select name="size" class="form-control mb-2" required>
+            <option value="">Select Size</option>
+            <option>XS</option><option>S</option><option>M</option><option>L</option><option>XL</option><option>Free</option>
+          </select>
+          <input type="text" name="name" placeholder="Full Name" class="form-control mb-2" required>
+          <input type="tel" name="phone" placeholder="Phone" class="form-control mb-2" required>
+          <textarea name="address" placeholder="Address" class="form-control mb-2" required></textarea>
+
+          <label><strong>Payment Method:</strong></label><br>
+          <input type="radio" name="payment_method" value="COD" checked> COD
+          <input type="radio" name="payment_method" value="eSewa" style="margin-left: 10px;"> eSewa
+
+          <p class="fw-bold mt-2">Total: Rs. <span id="modalTotalAmount"></span></p>
+        </div>
+        <div class="modal-footer border-0">
+          <button type="submit" class="btn btn-success w-100 fw-bold">Place Order</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<script>
+  function formatPrice(num) {
+    return parseFloat(num).toLocaleString("en-IN", {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2
+    });
+  }
+
+  function openBuyNowModal(id, name, price) {
+    document.getElementById('modalProductId').value = id;
+    document.getElementById('modalProductName').textContent = name;
+    document.getElementById('modalProductPrice').textContent = price;
+    document.getElementById('modalBasePrice').value = price;
+    document.getElementById('modalTotalAmount').textContent = price;
+
+    document.getElementById('modalQuantity').addEventListener('input', () => {
+      const qty = parseInt(document.getElementById('modalQuantity').value) || 1;
+      document.getElementById('modalTotalAmount').textContent = formatPrice(qty * price);
+    });
+
+    new bootstrap.Modal(document.getElementById('buyNowModal')).show();
+  }
+</script>
+{% endblock %}

@@ -1,0 +1,65 @@
+{% extends 'mytemplates/index.html' %}
+{% load static %}
+
+{% block content %}
+<link rel="stylesheet" href="{% static 'css/wishlist.css' %}">
+<div class="wishlist-container container mt-5">
+  <h2 class="text-center mb-4">Your Wishlist</h2>
+
+  {% if wishlist_items %}
+  <div class="wishlist-grid row justify-content-center">
+    {% for item in wishlist_items %}
+    <div class="wishlist-card col-md-3 m-3 p-3 border rounded shadow-sm text-center">
+      <img src="{{ item.product.image.url }}" alt="{{ item.product.product_name }}" class="img-fluid mb-2">
+      <h5>{{ item.product.product_name }}</h5>
+      <p><strong>Rs. {{ item.product.price }}</strong></p>
+
+      <div class="d-flex justify-content-center gap-2 mt-2">
+        <form method="POST" action="{% url 'add_to_cart' item.product.id %}">
+          {% csrf_token %}
+          <button class="btn btn-sm btn-primary">Add to Cart</button>
+        </form>
+        <form method="POST" action="{% url 'remove_wishlist_item' item.id %}">
+          {% csrf_token %}
+          <button class="btn btn-sm btn-danger">Remove</button>
+        </form>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+  {% else %}
+  <div class="alert alert-info text-center">Your wishlist is empty.</div>
+  {% endif %}
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<!-- ✅ Toast Popup for messages -->
+{% if messages %}
+  <div class="position-fixed top-50 start-50 translate-middle" style="z-index: 1055; min-width: 300px;">
+    {% for message in messages %}
+    <div class="toast align-items-center text-white 
+        {% if message.tags == 'error' %}bg-danger
+        {% elif message.tags == 'success' %}bg-success
+        {% else %}bg-info{% endif %} border-0 show" 
+        role="alert" aria-live="assertive" aria-atomic="true">
+      <div class="d-flex">
+        <div class="toast-body w-100 text-center">
+          {{ message }}
+        </div>
+        <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+{% endif %}
+
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const toastList = [].slice.call(document.querySelectorAll('.toast'));
+    toastList.map(function (toastEl) {
+      new bootstrap.Toast(toastEl, { delay: 3000 }).show();
+    });
+  });
+</script>
+{% endblock %}

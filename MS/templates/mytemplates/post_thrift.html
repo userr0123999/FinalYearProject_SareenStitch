@@ -1,0 +1,70 @@
+{% extends 'mytemplates/index.html' %}
+{% load static %}
+
+{% block content %}
+<link rel="stylesheet" href="{% static 'css/post_thrift.css' %}">
+
+<div class="thrift-post-wrapper">
+  <div class="thrift-post-box">
+    <h2 class="form-title">🧺 Post Your <span>Traditional Wear</span></h2>
+
+    <form method="POST" enctype="multipart/form-data">
+      {% csrf_token %}
+
+      <div class="form-group">
+        <label for="id_product_name">Product Name:</label>
+        {{ product_form.product_name }}
+      </div>
+
+      <div class="form-group">
+        <label for="id_description">Description:</label>
+        {{ product_form.description }}
+      </div>
+
+      <div class="form-row">
+        <div class="form-group half">
+          <label for="id_category">Category:</label>
+          {{ product_form.category }}
+        </div>
+        <div class="form-group half">
+          <label for="id_price">Price:</label>
+          {{ product_form.price }}
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group half">
+          <label for="id_size">Size:</label>
+          {{ product_form.size }}
+        </div>
+        <div class="form-group half">
+          <label for="id_image">Image:</label>
+          {{ product_form.image }}
+        </div>
+      </div>
+
+      <div class="form-group">
+  <label for="id_condition_rating">Condition Rating (1-5):</label>
+  {{ thrift_form.condition_rating }}
+</div>
+
+
+      <button type="submit" class="submit-btn">Submit for Approval</button>
+    </form>
+  </div>
+</div>
+
+{% if messages %}
+  <div class="toast-container">
+    {% for message in messages %}
+      <div class="toast-message">{{ message }}</div>
+    {% endfor %}
+  </div>
+  <script>
+    setTimeout(() => {
+      const toast = document.querySelector('.toast-container');
+      if (toast) toast.style.display = 'none';
+    }, 3000);
+  </script>
+{% endif %}
+{% endblock %}

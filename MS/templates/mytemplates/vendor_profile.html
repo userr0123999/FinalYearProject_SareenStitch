@@ -1,0 +1,36 @@
+{% extends 'mytemplates/vendor_dashboard.html' %}
+{% load static %}
+
+{% block content %}
+<link rel="stylesheet" href="{% static 'css/vendor_profile.css' %}">
+
+<div class="profile-section">
+  <h2>Vendor Profile</h2>
+
+  {% if messages %}
+    {% for message in messages %}
+      <div class="alert">{{ message }}</div>
+    {% endfor %}
+  {% endif %}
+
+  <form method="POST" enctype="multipart/form-data" class="profile-form">
+    {% csrf_token %}
+
+    <label for="store_name">Store Name</label>
+    <input type="text" name="store_name" id="store_name" value="{{ vendor.store_name }}" required>
+
+    <label for="store_description">Store Description</label>
+    <textarea name="store_description" id="store_description" rows="4" required>{{ vendor.store_description }}</textarea>
+
+    <label for="logo">Store Logo</label>
+    {% if vendor.logo %}
+      <div class="logo-preview">
+        <img src="{{ vendor.logo.url }}" alt="Vendor Logo">
+      </div>
+    {% endif %}
+    <input type="file" name="logo" id="logo">
+
+    <button type="submit" class="save-btn">Update Profile</button>
+  </form>
+</div>
+{% endblock %}

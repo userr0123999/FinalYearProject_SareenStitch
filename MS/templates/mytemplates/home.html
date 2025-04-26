@@ -1,0 +1,72 @@
+{% extends 'mytemplates/index.html' %}
+{% load static %}
+{% load humanize %}
+
+{% block content %}
+<!-- 🎀 Hero Section -->
+<div style="text-align: center; padding: 60px 20px; background: linear-gradient(to bottom right, #fff1f8, #efe9ff); border-radius: 12px; margin: 20px;">
+  <h1 style="font-size: 36px; color: #8a0745; font-weight: bold; margin-bottom: 10px;">Saree & Stitch</h1>
+  <h2 style="font-size: 18px; color: #444; font-weight: 500; margin-bottom: 30px;">Tradition from many hands. Style on one platform</h2>
+
+  <div style="display: flex; justify-content: center; gap: 20px; flex-wrap: wrap;">
+    <video style="width: 300px; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.1);" autoplay muted loop>
+      <source src="{% static 'videos/video1.mp4' %}" type="video/mp4">
+    </video>
+    <video style="width: 300px; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.1);" autoplay muted loop>
+      <source src="{% static 'videos/video2.mp4' %}" type="video/mp4">
+    </video>
+    <video style="width: 300px; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.1);" autoplay muted loop>
+      <source src="{% static 'videos/video3.mp4' %}" type="video/mp4">
+    </video>
+  </div>
+
+  <!-- 🌟 Action Buttons -->
+  <div style="margin-top: 40px; display: flex; justify-content: center; gap: 20px; flex-wrap: wrap;">
+    <a href="{% url 'bidding_list' %}" style="padding: 12px 28px; background: #000; color: white; border-radius: 30px; font-weight: bold; text-decoration: none; transition: 0.3s;">🎯 Explore Bidding</a>
+    <a href="{% url 'thrift' %}" style="padding: 12px 28px; background: #8a0745; color: white; border-radius: 30px; font-weight: bold; text-decoration: none; transition: 0.3s;">🧺 Thrift Collection</a>
+    <a href="{% url 'all_vendors' %}" style="padding: 12px 28px; background: #3c1361; color: white; border-radius: 30px; font-weight: bold; text-decoration: none; transition: 0.3s;">🏪 Vendor Stores</a>
+  </div>
+</div>
+
+<!-- 💖 Our Collection Section with Carousel -->
+<div style="text-align: center; margin-top: 60px;">
+  <h2 style="font-size: 28px; font-weight: bold; color: #222; margin-bottom: 30px;">🧵 Our Collection</h2>
+
+  <div id="carousel" style="display: flex; overflow-x: auto; gap: 25px; padding: 10px 20px; scroll-behavior: smooth;">
+    {% for product in products %}
+      <div style="min-width: 240px; background: white; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); padding: 15px; flex-shrink: 0; transition: transform 0.3s ease;"
+           onmouseover="this.style.transform='scale(1.05)'"
+           onmouseout="this.style.transform='scale(1)'">
+        <!-- Product Image -->
+        <img src="{{ product.image.url }}" alt="{{ product.product_name }}" style="width: 100%; height: 220px; object-fit: cover; border-radius: 10px;">
+
+        <!-- Product Title -->
+        <p style="font-weight: 600; margin-top: 10px;">{{ product.product_name|truncatechars:25 }}</p>
+
+        <!-- Product Price -->
+        <p style="color: #888; font-size: 14px;">Rs. {{ product.price }}</p>
+
+        <!-- Shop Now Button -->
+        <a href="{% url 'product' %}" style="display: inline-block; margin-top: 8px; padding: 8px 16px; background: black; color: white; border-radius: 25px; font-size: 14px; text-decoration: none; transition: 0.3s;">🛍 Shop Now</a>
+      </div>
+    {% empty %}
+      <p>No products available.</p>
+    {% endfor %}
+  </div>
+
+  <!-- View All Products Button -->
+  <a href="{% url 'product' %}" style="margin-top: 30px; display: inline-block; padding: 12px 30px; background: #000; color: white; border-radius: 30px; text-decoration: none; font-weight: bold;">🔍 View All Products</a>
+</div>
+{% endblock %}
+
+<script>
+  const scrollArea = document.getElementById("carousel");
+  if (scrollArea) {
+    let scrollInterval = setInterval(() => {
+      scrollArea.scrollLeft += 1.5;
+      if (scrollArea.scrollLeft + scrollArea.offsetWidth >= scrollArea.scrollWidth) {
+        scrollArea.scrollLeft = 0; // Loop to start
+      }
+    }, 25);
+  }
+</script>

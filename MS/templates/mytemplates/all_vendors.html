@@ -1,0 +1,38 @@
+{% extends 'mytemplates/index.html' %}
+{% load static %}
+
+{% block content %}
+<section style="padding: 50px 20px; background: linear-gradient(to right, #fff1f8, #efe9ff); min-height: 100vh;">
+  <h1 style="text-align: center; font-size: 36px; color: #5e1361; font-weight: bold; margin-bottom: 40px;">
+    🏪 Our Featured Vendors
+  </h1>
+
+  <div style="display: flex; flex-wrap: wrap; justify-content: center; gap: 30px;">
+    {% for vendor in vendors %}
+      <div style="width: 270px; background: #ffffff; border-radius: 16px; box-shadow: 0 4px 14px rgba(0,0,0,0.1); overflow: hidden; transition: 0.3s;"
+           onmouseover="this.style.transform='scale(1.03)'"
+           onmouseout="this.style.transform='scale(1)'">
+
+        <div style="height: 200px; background: #f8f8f8; display: flex; align-items: center; justify-content: center;">
+          {% if vendor.logo %}
+            <img src="{{ vendor.logo.url }}" alt="{{ vendor.store_name }}" style="max-width: 100%; max-height: 100%;">
+          {% else %}
+            <img src="{% static 'images/default-vendor.png' %}" alt="No Logo" style="max-width: 100%; max-height: 100%;">
+          {% endif %}
+        </div>
+
+        <div style="padding: 20px;">
+          <h3 style="font-size: 20px; color: #4a0d4d; font-weight: bold; margin-bottom: 10px;">{{ vendor.store_name }}</h3>
+          <p style="font-size: 14px; color: #555; margin-bottom: 15px;">{{ vendor.description|truncatewords:20 }}</p>
+          <a href="{% url 'vendor_store' vendor.id %}"
+             style="display: inline-block; padding: 10px 20px; background: #5e1361; color: white; border-radius: 8px; text-decoration: none; font-weight: bold;">
+            Visit Store →
+          </a>
+        </div>
+      </div>
+    {% empty %}
+      <p style="text-align: center; font-size: 18px; color: #c00;">No vendors found.</p>
+    {% endfor %}
+  </div>
+</section>
+{% endblock %}

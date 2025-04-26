@@ -1,0 +1,133 @@
+{% extends 'mytemplates/index.html' %}
+{% load static %}
+{% load humanize %}
+
+{% block content %}
+<link rel="stylesheet" href="{% static 'css/thrift.css' %}">
+
+<!-- ✅ Toast Messages -->
+{% if messages %}
+  <div class="toast-messages">
+    {% for message in messages %}
+      <div class="toast {{ message.tags }}">{{ message }}</div>
+    {% endfor %}
+  </div>
+{% endif %}
+
+<div class="thrift-detail-container">
+  <div class="thrift-detail-box">
+    <div class="image-section">
+      {% if thrift.product.image %}
+        <img src="{{ thrift.product.image.url }}" alt="{{ thrift.product.product_name }}">
+      {% else %}
+        <img src="{% static 'images/default-product.jpg' %}" alt="No Image">
+      {% endif %}
+    </div>
+
+    <div class="info-section">
+      <h2>{{ thrift.product.product_name }}</h2>
+      <p><strong>Price:</strong> <span class="price-tag">Rs. {{ thrift.product.price }}</span></p>
+      <p><strong>Condition:</strong> <span class="condition-tag">{{ thrift.get_condition_rating_display }}</span></p>
+      <p><strong>Size:</strong> {{ thrift.product.size }}</p>
+      <p><strong>Description:</strong><br>{{ thrift.product.description }}</p>
+      <p><strong>Seller:</strong> <span class="seller-tag">{{ thrift.user.username }}</span></p>
+
+      {% if not thrift.is_sold %}
+        <form action="{% url 'add_to_cart' thrift.product.id %}" method="POST" class="add-cart-form">
+          {% csrf_token %}
+          <input type="hidden" name="size" value="Free Size">
+          <button type="submit" class="action-btn cart-btn">🛒 Add to Cart</button>
+        </form>
+      {% else %}
+        <p class="sold-label">This item has been sold.</p>
+      {% endif %}
+
+      <a href="{% url 'thrift_chat' thrift.id %}" class="action-btn chat-btn">💬 Chat with Seller</a>
+    </div>
+  </div>
+
+  <!-- 🌟 Average Rating -->
+  <div class="average-rating">
+    <p>
+      Average Rating:
+      {% if average_rating %}
+        {% with avg=average_rating|floatformat:0 %}
+          {% for i in "12345"|slice:":avg" %}
+            <span style="color:#f5c518;">★</span>
+          {% endfor %}
+          {% for i in "12345"|slice:"avg:" %}
+            <span style="color:#ddd;">★</span>
+          {% endfor %}
+        {% endwith %}
+        ({{ average_rating|floatformat:1 }}/5 from {{ reviews|length }} reviews)
+      {% else %}
+        <em>No ratings yet.</em>
+      {% endif %}
+    </p>
+  </div>
+
+  <!-- ⭐ Rating Form -->
+  <div class="rating-section">
+    <h3>Rate & Review</h3>
+    {% if user.is_authenticated %}
+      <form method="POST">
+        {% csrf_token %}
+        <div class="star-rating">
+          {% for i in "54321" %}
+            <input type="radio" id="star{{ i }}" name="rating" value="{{ i }}">
+            <label for="star{{ i }}">★</label>
+          {% endfor %}
+        </div>
+        <textarea name="review" placeholder="Write a review..." rows="3" required></textarea>
+        <button type="submit" name="rating">Submit Review</button>
+      </form>
+    {% else %}
+      <p>Please <a href="{% url 'login' %}">login</a> to rate & review.</p>
+    {% endif %}
+  </div>
+
+  <!-- 💬 Comments -->
+  <div class="comments-section">
+    <h3>Comments</h3>
+    {% if user.is_authenticated %}
+      <form method="POST">
+        {% csrf_token %}
+        <textarea name="comment" placeholder="Write your comment..." required></textarea>
+        <button type="submit">Post Comment</button>
+      </form>
+    {% endif %}
+
+    {% for c in comments %}
+      <div class="comment">
+        <strong>{{ c.user.username }}</strong>: {{ c.message }}<br>
+        <small>{{ c.created_at|naturaltime }}</small>
+      </div>
+    {% empty %}
+      <p>No comments yet.</p>
+    {% endfor %}
+  </div>
+
+  <!-- ✅ Customer Reviews -->
+  <div class="reviews-section">
+    <h3>Customer Reviews</h3>
+    {% for r in reviews %}
+      <div class="review">
+        <strong>{{ r.user }}</strong>
+        <span class="stars">
+          {% for i in "12345"|slice:":r.rating" %}
+            <span style="color:#f5c518;">★</span>
+          {% endfor %}
+          {% for i in "12345"|slice:"r.rating:" %}
+            <span style="color:#ccc;">★</span>
+          {% endfor %}
+        </span>
+        <br>{{ r.review }}
+        <br><small>{{ r.timestamp|naturaltime }}</small>
+      </div>
+    {% empty %}
+      <p>No reviews yet.</p>
+    {% endfor %}
+  </div>
+</div>
+
+{% endblock %}

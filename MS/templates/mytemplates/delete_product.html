@@ -1,0 +1,63 @@
+{#{% extends 'mytemplates/admin_dashboard.html' %}#}
+{#{% block content %}#}
+{#<h2>Confirm Delete</h2>#}
+{#<p>Are you sure you want to delete <strong>{{ product.product_name }}</strong>?</p>#}
+{#<form method="post">#}
+{#    {% csrf_token %}#}
+{#    <button type="submit">Yes, Delete</button>#}
+{#    <a href="{% url 'admin_products' %}">Cancel</a>#}
+{#</form>#}
+{#{% endblock %}#}
+{% extends 'mytemplates/admin_dashboard.html' %}
+{% block content %}
+<div style="max-width: 500px; margin: 50px auto; background: #fff; padding: 30px; border-radius: 12px; box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); text-align: center; font-family: Arial, sans-serif;">
+    <h2 style="color: #333; margin-bottom: 20px;">Confirm Delete</h2>
+    <p style="font-size: 18px; color: #555;">Are you sure you want to delete <strong style="color: navy;">{{ product.product_name }}</strong>?</p>
+
+    <form method="post" style="margin-top: 30px;">
+        {% csrf_token %}
+        <button type="submit" class="btn-delete">Yes, Delete</button>
+        <a href="{% url 'admin_products' %}" class="btn-cancel">Cancel</a>
+    </form>
+</div>
+
+<style>
+/* ✅ Button Common Styles */
+.btn-delete, .btn-cancel {
+    padding: 12px 25px;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: bold;
+    text-decoration: none;
+    color: white;
+    border: none;
+    cursor: pointer;
+    display: inline-block;
+    margin-right: 10px;
+    transition: all 0.3s ease;
+}
+
+/* ✅ Individual Button Colors */
+.btn-delete {
+    background-color: navy;
+}
+
+.btn-cancel {
+    background-color: #6c757d;
+}
+
+/* ✅ Hover Effects */
+.btn-delete:hover {
+    background-color: #001f5c; /* darker navy */
+    transform: scale(1.05);
+}
+
+.btn-cancel:hover {
+    background-color: #5a6268; /* slightly darker gray */
+    transform: scale(1.05);
+}
+</style>
+{% endblock %}
+
+
+

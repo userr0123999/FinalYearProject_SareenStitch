@@ -1,0 +1,89 @@
+{% extends 'mytemplates/index.html' %}
+{% load static %}
+{% block content %}
+<h2 style="text-align:center; font-size: 28px; margin: 40px 0;">🔍 Search Results for "{{ query }}"</h2>
+
+<div style="display: flex; flex-wrap: wrap; gap: 30px; justify-content: center; padding: 0 20px;">
+  {% for product in products %}
+  <div style="width: 260px; background: #fff; border-radius: 16px; overflow: hidden; box-shadow: 0 4px 14px rgba(0,0,0,0.1); text-align: center;">
+    <img src="{{ product.image.url }}" alt="{{ product.product_name }}" style="width: 100%; height: 240px; object-fit: cover;">
+    <div style="padding: 16px;">
+      <h4 style="font-size: 18px;">{{ product.product_name }}</h4>
+      <p style="color: #888; font-weight: 500;">Rs. {{ product.price }}</p>
+      <div style="margin: 10px 0;">
+        <a href="{% url 'add_to_cart' product.id %}" title="Add to Cart" style="color: #000; font-size: 18px; margin: 0 10px;"><i class="fas fa-shopping-cart"></i></a>
+        <a href="{% url 'add_to_wishlist' product.id %}" title="Add to Wishlist" style="color: #e91e63; font-size: 18px; margin: 0 10px;"><i class="fas fa-heart"></i></a>
+      </div>
+      <div style="margin-top: 10px;">
+        <a href="{% url 'product_detail' product.id %}" style="padding: 6px 14px; background: #3c1361; color: white; border-radius: 8px; font-size: 14px; text-decoration: none;">View Details</a>
+        <button style="padding: 6px 14px; background: black; color: white; border-radius: 8px; font-size: 14px; margin-left: 10px;"
+                onclick="openBuyNowModal('{{ product.id }}', '{{ product.product_name }}', '{{ product.price }}')">
+          Buy Now
+        </button>
+      </div>
+    </div>
+  </div>
+  {% empty %}
+    <p style="text-align:center; font-size: 18px; color: gray;">No products match your search.</p>
+  {% endfor %}
+</div>
+
+<!-- 🛒 Buy Now Modal -->
+<div class="modal fade" id="buyNowModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content p-4" style="border-radius: 16px;">
+      <div class="modal-header border-0">
+        <h5 class="modal-title fw-bold">🛍️ Buy Now</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <form method="POST" action="{% url 'buy_now_checkout' %}">
+        {% csrf_token %}
+        <input type="hidden" name="product_id" id="modalProductId">
+        <input type="hidden" id="modalBasePrice">
+        <div class="modal-body">
+          <p><strong id="modalProductName"></strong> - Rs. <span id="modalProductPrice"></span></p>
+          <input type="number" name="quantity" id="modalQuantity" class="form-control mb-2" min="1" value="1" placeholder="Quantity" required>
+          <select name="size" class="form-control mb-2" required>
+            <option value="">Select Size</option>
+            <option>S</option><option>M</option><option>L</option><option>XL</option><option>Free</option>
+          </select>
+          <input type="text" name="name" class="form-control mb-2" placeholder="Full Name" required>
+          <input type="tel" name="phone" class="form-control mb-2" placeholder="Phone" required>
+          <textarea name="address" class="form-control mb-2" placeholder="Address" required></textarea>
+          <label><strong>Payment Method:</strong></label><br>
+          <input type="radio" name="payment_method" value="COD" checked> COD
+          <input type="radio" name="payment_method" value="eSewa" style="margin-left: 10px;"> eSewa
+          <p class="fw-bold mt-2">Total: Rs. <span id="modalTotalAmount"></span></p>
+        </div>
+        <div class="modal-footer border-0">
+          <button type="submit" class="btn btn-success w-100 fw-bold">Place Order</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<script>
+  function formatPrice(num) {
+    return parseFloat(num).toLocaleString("en-IN", {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2
+    });
+  }
+
+  function openBuyNowModal(id, name, price) {
+    document.getElementById('modalProductId').value = id;
+    document.getElementById('modalProductName').textContent = name;
+    document.getElementById('modalProductPrice').textContent = formatPrice(price);
+    document.getElementById('modalBasePrice').value = price;
+    document.getElementById('modalTotalAmount').textContent = formatPrice(price);
+
+    document.getElementById('modalQuantity').addEventListener('input', () => {
+      const qty = parseInt(document.getElementById('modalQuantity').value) || 1;
+      document.getElementById('modalTotalAmount').textContent = formatPrice(qty * price);
+    });
+
+    new bootstrap.Modal(document.getElementById('buyNowModal')).show();
+  }
+</script>
+{% endblock %}

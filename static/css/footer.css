@@ -1,0 +1,54 @@
+/* Footer */
+footer {
+    background-color: #4b1e3e; /* deep plum - pairs beautifully with baby pink */
+    padding: 40px 60px;
+    margin-top: 60px;
+}
+
+.footer-container {
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    color: #fff;
+}
+
+.footer-section {
+    width: 30%;
+}
+
+.footer-section h3 {
+    font-size: 22px;
+    margin-bottom: 15px;
+}
+
+.footer-section p {
+    font-size: 16px;
+}
+
+.footer-section ul {
+    list-style: none;
+}
+
+.footer-section ul li {
+    margin-bottom: 10px;
+}
+
+.footer-section ul li a {
+    text-decoration: none;
+    color: rgb(245, 245, 245);
+    font-size: 16px;
+}
+
+.footer-section .social-icons i {
+    font-size: 26px;
+    margin-right: 12px;
+    cursor: pointer;
+    color: #fff;
+}
+
+.footer-bottom {
+    text-align: center;
+    margin-top: 20px;
+    font-size: 16px;
+    color: #fff;
+}

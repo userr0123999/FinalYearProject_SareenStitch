@@ -1,0 +1,386 @@
+/* ---------- Thrift Hero Section ---------- */
+.thrift-hero {
+  background-color: #fef2f7;
+  text-align: center;
+  padding: 50px 20px 30px;
+  border-radius: 12px;
+  margin: 20px;
+}
+
+.thrift-hero h2 {
+  font-size: 28px;
+  color: #111;
+  margin-bottom: 10px;
+}
+
+.thrift-hero p {
+  font-size: 16px;
+  color: #555;
+  margin-bottom: 20px;
+}
+
+.thrift-hero .btn {
+  padding: 10px 20px;
+  background: black;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-weight: bold;
+  text-decoration: none;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+/* ---------- Filters ---------- */
+.thrift-filters {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 12px;
+  margin: 30px auto 10px;
+  flex-wrap: wrap;
+}
+
+.thrift-filters select,
+.thrift-filters input {
+  padding: 8px 12px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  font-size: 14px;
+  width: 140px;
+}
+
+.thrift-filters button {
+  padding: 8px 16px;
+  background-color: #444;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.thrift-filters button:hover {
+  background-color: #000;
+}
+
+/* ---------- Product Cards ---------- */
+.thrift-grid {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 30px;
+  margin: 30px auto 60px;
+}
+
+.thrift-card {
+  width: 350px;
+  background: #fff;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+  text-align: center;
+  position: relative;
+}
+
+.thrift-card img {
+  width: 220px;
+  border-radius: 10px;
+  margin-bottom: 15px;
+}
+
+.thrift-card h3 {
+  font-size: 20px;
+  font-weight: 600;
+}
+
+.thrift-card p {
+  font-size: 14px;
+  color: #555;
+  margin: 5px 0;
+}
+
+/* ---------- Sold Badge & Disabled Cart ---------- */
+.sold-badge {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: #dc3545;
+  color: white;
+  font-size: 13px;
+  padding: 5px 10px;
+  border-radius: 6px;
+  font-weight: 600;
+}
+
+.cart-btn:disabled {
+  background: #ccc;
+  cursor: not-allowed;
+}
+
+.sold-note {
+  font-size: 14px;
+  font-style: italic;
+  color: #999;
+  margin-top: 8px;
+}
+
+/* ---------- Buttons ---------- */
+.thrift-actions {
+  margin-top: 10px;
+}
+
+.view-btn,
+.cart-btn {
+  padding: 8px 16px;
+  background: #000;
+  color: white;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  text-decoration: none;
+  margin: 5px 5px 0;
+  display: inline-block;
+  border: none;
+  cursor: pointer;
+}
+
+.view-btn:hover,
+.cart-btn:hover {
+  background: #333;
+}
+
+/* ---------- Thrift Detail Layout ---------- */
+.thrift-detail-container {
+  max-width: 1000px;
+  margin: 40px auto;
+  padding: 20px;
+}
+
+.thrift-detail-box {
+  display: flex;
+  gap: 40px;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  padding: 30px;
+  flex-wrap: wrap;
+}
+
+.image-section img {
+  width: 350px;
+  border-radius: 10px;
+  border: 1px solid #ccc;
+}
+
+.info-section {
+  flex: 1;
+  min-width: 280px;
+}
+
+.info-section h2 {
+  font-size: 28px;
+  margin-bottom: 15px;
+}
+
+.info-section p {
+  font-size: 16px;
+  margin: 10px 0;
+}
+
+.price-tag,
+.condition-tag {
+  background-color: #f2f2f2;
+  padding: 4px 10px;
+  border-radius: 8px;
+  font-weight: 600;
+}
+
+.chat-btn {
+  background: #f5f5f5;
+  color: #000;
+  border: 1px solid #ddd;
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-weight: bold;
+  display: inline-block;
+  margin-top: 15px;
+  cursor: pointer;
+}
+
+.chat-btn:hover {
+  background: #e8e8e8;
+}
+
+/* ---------- Star Rating Input ---------- */
+.star-rating {
+  direction: rtl;
+  display: inline-flex;
+  gap: 6px;
+  font-size: 24px;
+  user-select: none;
+  margin: 10px 0;
+}
+
+.star-rating input[type="radio"] {
+  display: none;
+}
+
+.star-rating label {
+  color: #ccc;
+  cursor: pointer;
+  transition: color 0.3s ease;
+}
+
+.star-rating input[type="radio"]:checked ~ label,
+.star-rating label:hover,
+.star-rating label:hover ~ label {
+  color: #f5c518;
+}
+
+/* ---------- Rating & Comments ---------- */
+.rating-section textarea,
+.comments-section textarea {
+  width: 100%;
+  min-height: 80px;
+  border-radius: 8px;
+  padding: 10px;
+  border: 1px solid #ccc;
+  font-size: 14px;
+  margin-top: 10px;
+}
+
+.rating-section button,
+.comments-section button {
+  margin-top: 10px;
+  padding: 10px 20px;
+  background: #000;
+  color: #fff;
+  border-radius: 6px;
+  border: none;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.rating-section button:hover,
+.comments-section button:hover {
+  background-color: #333;
+}
+
+.average-rating {
+  font-size: 16px;
+  margin-top: 30px;
+  color: #222;
+}
+
+/* ---------- Review Display ---------- */
+.reviews-section,
+.comments-section {
+  margin-top: 40px;
+}
+
+.reviews-section h3,
+.comments-section h3 {
+  font-size: 20px;
+  margin-bottom: 15px;
+  color: #333;
+}
+
+.review {
+  background: #f8f8f8;
+  padding: 12px 18px;
+  margin-bottom: 12px;
+  border-radius: 10px;
+  border: 1px solid #ddd;
+}
+
+.review .stars {
+  color: #f5c518;
+  font-size: 18px;
+}
+
+.review small {
+  font-size: 12px;
+  color: #888;
+}
+
+/* ---------- Toast Notifications ---------- */
+.toast-messages {
+  margin: 20px auto;
+  max-width: 600px;
+  text-align: center;
+}
+
+.toast {
+  padding: 12px 20px;
+  border-left: 6px solid #444;
+  border-radius: 8px;
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+
+.toast.success {
+  border-color: #28a745;
+  background: #d4edda;
+  color: #155724;
+}
+
+.toast.error {
+  border-color: #dc3545;
+  background: #f8d7da;
+  color: #721c24;
+}
+
+/* ---------- Responsive ---------- */
+@media (max-width: 768px) {
+  .thrift-detail-box {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .image-section img {
+    width: 100%;
+    max-width: 350px;
+  }
+
+  .info-section {
+    text-align: center;
+  }
+
+  .thrift-filters select,
+  .thrift-filters input {
+    width: 100px;
+  }
+
+  .thrift-card {
+    width: 90%;
+  }
+}
+
+/* ---------- Sold Badge ---------- */
+.sold-badge {
+  background-color: #ff4d4f;
+  color: white;
+  font-weight: bold;
+  padding: 6px 12px;
+  border-radius: 8px;
+  display: inline-block;
+  margin-bottom: 10px;
+  font-size: 14px;
+}
+
+
+/* ---------- Disable Add to Cart Button ---------- */
+.cart-btn:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+  color: #666;
+}
+
+/* ---------- Sold Note ---------- */
+.sold-note {
+  margin-top: 8px;
+  font-size: 13px;
+  font-style: italic;
+  color: #999;
+}

@@ -1,0 +1,119 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Vendor Dashboard</title>
+  <link rel="stylesheet" href="{% static 'css/admin_dashboard.css' %}">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+<div class="admin-container">
+  <!-- Sidebar -->
+  <div class="sidebar">
+    <div class="logo">
+      <img src="{% static 'images/golo-removebg-preview.png' %}" alt="Logo">
+    </div>
+    <ul class="nav">
+        <li><a href="{% url 'vendor_dashboard' %}"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
+        <li><a href="{% url 'vendor_products' %}"><i class="fas fa-box"></i> My Products</a></li>
+        <li><a href="{% url 'vendor_orders' %}"><i class="fas fa-shopping-bag"></i> Orders</a></li>
+        <li><a href="{% url 'vendor_payment_report' %}"><i class="fas fa-file-invoice-dollar"></i> Payment Report</a></li>
+        <li><a href="{% url 'vendor_profile' %}"><i class="fas fa-user-cog"></i> My Profile</a></li>
+        <li><a href="{% url 'logout' %}"><i class="fas fa-power-off"></i> Logout</a></li>
+    </ul>
+  </div>
+
+  <!-- Main -->
+  <div class="main">
+    <div class="topbar">
+      <p>Hello, <strong>{{ request.user.username }}</strong></p>
+      <i class="fas fa-user-circle"></i>
+    </div>
+
+    {% if request.resolver_match.url_name == "vendor_dashboard" %}
+      <!-- ✅ Show only if on the actual dashboard -->
+      <h1>Vendor Dashboard</h1>
+
+      <div class="cards">
+        <div class="card">
+          <p>{{ total_products }}</p>
+          <span>Your Products</span>
+          <i class="fas fa-box"></i>
+        </div>
+        <div class="card">
+          <p>{{ total_orders }}</p>
+          <span>Orders Received</span>
+          <i class="fas fa-shopping-cart"></i>
+        </div>
+      </div>
+
+      <h2 style="margin-top: 40px;">Analytics</h2>
+      <div class="charts-row">
+        <div class="chart-card">
+          <canvas id="orderStatusChart"></canvas>
+          <p class="chart-caption">Order Status Overview</p>
+        </div>
+        <div class="chart-card">
+          <canvas id="monthlyOrdersChart"></canvas>
+          <p class="chart-caption">Monthly Orders</p>
+        </div>
+        <div class="chart-card">
+          <canvas id="topProductsChart"></canvas>
+          <p class="chart-caption">Top 5 Selling Products</p>
+        </div>
+      </div>
+    {% endif %}
+
+    <!-- ✅ Page-specific content will render here -->
+    {% block content %}{% endblock %}
+  </div>
+</div>
+
+<!-- ChartJS Scripts -->
+{% if request.resolver_match.url_name == "vendor_dashboard" %}
+<script>
+  new Chart(document.getElementById('orderStatusChart'), {
+    type: 'pie',
+    data: {
+      labels: ['Pending', 'Shipped', 'Delivered', 'Cancelled'],
+      datasets: [{
+        data: [{{ status_counts.pending|default:"0" }}, {{ status_counts.shipped|default:"0" }},
+               {{ status_counts.delivered|default:"0" }}, {{ status_counts.cancelled|default:"0" }}],
+        backgroundColor: ['#ffc107', '#17a2b8', '#28a745', '#dc3545']
+      }]
+    }
+  });
+
+  new Chart(document.getElementById('monthlyOrdersChart'), {
+    type: 'bar',
+    data: {
+      labels: [{% for month in monthly_orders.keys %}'{{ month }}'{% if not forloop.last %}, {% endif %}{% endfor %}],
+      datasets: [{
+        label: 'Orders',
+        data: [{% for count in monthly_orders.values %}{{ count }}{% if not forloop.last %}, {% endif %}{% endfor %}],
+        backgroundColor: '#007bff'
+      }]
+    },
+    options: {
+      scales: {
+        y: { beginAtZero: true }
+      }
+    }
+  });
+
+  new Chart(document.getElementById('topProductsChart'), {
+    type: 'doughnut',
+    data: {
+      labels: [{% for item in top_products %}'{{ item.product__product_name }}'{% if not forloop.last %}, {% endif %}{% endfor %}],
+      datasets: [{
+        data: [{% for item in top_products %}{{ item.total }}{% if not forloop.last %}, {% endif %}{% endfor %}],
+        backgroundColor: ['#4a90e2', '#ff6f61', '#20c997', '#ffc107', '#6f42c1']
+      }]
+    }
+  });
+</script>
+{% endif %}
+</body>
+</html>

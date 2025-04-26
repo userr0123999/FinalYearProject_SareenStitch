@@ -1,0 +1,135 @@
+/* General Styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: Arial, sans-serif;
+}
+
+body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background: linear-gradient(to right, #f3e8ff, #ffe5ec); /* lavender to soft peach */
+}
+
+/* Container */
+.container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    width: 100%;
+    max-width: 450px;
+}
+
+/* Logo */
+.logo-container {
+    width: 250%;
+    display: flex;
+    justify-content: flex-start;
+    padding-left: 500px;
+}
+
+.logo-container img {
+    width: 120px;
+}
+
+/* Form Wrapper */
+.form-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    margin-top: 20px;
+}
+
+.form-container {
+    width: 100%;
+    max-width: 400px;
+    background: white;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+}
+
+h1 {
+    font-size: 26px;
+    font-weight: bold;
+    margin-bottom: 20px;
+    color: #4b1e3e; /* deep plum for heading */
+}
+
+/* Input Fields */
+form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+label {
+    text-align: left;
+    font-size: 16px;
+    font-weight: bold;
+    margin-left: 5px;
+    color: #4b1e3e;
+}
+
+input {
+    width: 100%;
+    padding: 14px;
+    border: none;
+    background-color: #f3f0f5; /* soft lavender input */
+    border-radius: 5px;
+    font-size: 16px;
+    color: #333;
+}
+
+/* Forgot Password */
+.forgot-password {
+    display: block;
+    text-align: left;
+    font-size: 12px;
+    color: #4b1e3e;
+    margin-top: 5px;
+    margin-left: 5px;
+    text-decoration: none;
+}
+
+/* Login Button */
+button {
+    padding: 14px;
+    border: none;
+    background-color: #4b1e3e; /* plum */
+    color: white;
+    font-size: 18px;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-top: 10px;
+    width: 100%;
+    transition: background-color 0.3s ease;
+}
+
+button:hover {
+    background-color: #6a2c70; /* mauve hover */
+}
+
+/* Register Link */
+p {
+    margin-top: 20px;
+    font-size: 16px;
+}
+
+p a {
+    color: #c0396b; /* deep rose */
+    text-decoration: none;
+    font-weight: bold;
+}
+
+p a:hover {
+    text-decoration: underline;
+}
+
+
+

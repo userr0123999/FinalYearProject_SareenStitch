@@ -1,0 +1,42 @@
+{% extends 'mytemplates/admin_dashboard.html' %}
+{% block content %}
+<h2>Manage Users</h2>
+
+<div class="table-container">
+  <table class="product-table">
+    <thead>
+      <tr>
+        <th>S.N.</th>  <!-- Serial Number Column -->
+        <th>Username</th>
+        <th>Full Name</th>
+        <th>Email</th>
+        <th>Date Joined</th>
+        <th>Is Active</th>
+        <th>Role</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for user in users %}
+      <tr class="{% cycle 'row-light' 'row-dark' %}">
+        <td>{{ forloop.counter }}</td>  <!-- S.N. -->
+        <td>{{ user.username }}</td>
+        <td>{{ user.first_name }}</td>
+        <td>{{ user.email }}</td>
+        <td>{{ user.date_joined|date:"Y-m-d" }}</td>
+        <td>{{ user.is_active }}</td>
+        <td>
+          {% if user.is_superuser or user.is_staff %}
+            <span class="badge badge-admin">Admin</span>
+          {% else %}
+            <span class="badge badge-customer">Customer</span>
+          {% endif %}
+        </td>
+      </tr>
+      {% empty %}
+      <tr><td colspan="7">No users found.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+{% endblock %}

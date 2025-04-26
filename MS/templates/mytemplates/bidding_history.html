@@ -1,0 +1,86 @@
+{% extends 'mytemplates/index.html' %}
+{% block content %}
+
+<style>
+  .bidding-history {
+    max-width: 1100px;
+    margin: 40px auto;
+    padding: 30px;
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+  }
+  .bidding-history h2 {
+    text-align: center;
+    font-size: 28px;
+    margin-bottom: 30px;
+    color: #222;
+  }
+  .product-title {
+    font-size: 20px;
+    margin-top: 30px;
+    font-weight: bold;
+    color: #333;
+  }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 15px;
+    margin-bottom: 30px;
+  }
+  th, td {
+    padding: 12px 15px;
+    border-bottom: 1px solid #ddd;
+    text-align: left;
+  }
+  th {
+    background-color: #f8f8f8;
+    font-weight: 600;
+  }
+  .status {
+    font-weight: bold;
+  }
+  .status.pending { color: orange; }
+  .status.won { color: green; }
+  .status.lost { color: red; }
+</style>
+
+<div class="bidding-history">
+  <h2>Your Bidding History</h2>
+
+  {% if bid_groups %}
+    {% for product, bids in bid_groups %}
+      <div class="product-title">{{ product.product_name }}</div>
+      <table>
+        <thead>
+          <tr>
+            <th>Bid Amount</th>
+            <th>Bid Time</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for bid in bids %}
+            <tr>
+              <td>Rs. {{ bid.amount }}</td>
+              <td>{{ bid.bid_time|date:"d M Y, H:i A" }}</td>
+              <td class="status {% if product.end_time > now %}pending{% elif bid.amount == product.highest_bid.amount %}won{% else %}lost{% endif %}">
+                {% if product.end_time > now %}
+                  Pending
+                {% elif bid.amount == product.highest_bid.amount %}
+                  Won
+                {% else %}
+                  Lost
+                {% endif %}
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    {% endfor %}
+  {% else %}
+    <p style="text-align: center; color: #666;">You haven’t placed any bids yet.</p>
+  {% endif %}
+</div>
+
+{% endblock %}

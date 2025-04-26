@@ -1,0 +1,104 @@
+{% extends 'mytemplates/index.html' %}
+{% load static %}
+{% block content %}
+
+<div style="max-width: 700px; margin: 40px auto; background: #fff; border-radius: 12px; box-shadow: 0 8px 24px rgba(0,0,0,0.1); padding: 30px;">
+  <!-- 🖼️ Product Image -->
+  <div style="text-align:center;">
+    <img src="{{ product.image.url }}" alt="{{ product.product_name }}"
+         style="width: 300px; border-radius: 10px; transition: transform 0.4s;"
+         onmouseover="this.style.transform='scale(1.05)'"
+         onmouseout="this.style.transform='scale(1)'">
+  </div>
+
+  <!-- 📝 Product Info -->
+  <h2 style="text-align: center; font-weight: bold; color: #4a148c; margin-top: 20px;">{{ product.product_name }}</h2>
+  <p style="text-align: center; color: #888;">{{ product.description }}</p>
+
+  <div style="margin-top: 20px; font-size: 16px;">
+    <p><strong style="color: #28a745;">Starting Price:</strong> Rs {{ product.starting_price }}</p>
+    <p><strong style="color: #ff9800;">Estimated Price:</strong> Rs {{ product.estimated_price }}</p>
+    <p><strong style="color: #f44336;">Highest Bid:</strong> Rs {{ product.highest_bid.amount|default:product.starting_price }}</p>
+    {% if product.highest_bid %}
+      <p><strong>Highest Bidder:</strong> {{ product.highest_bid.user.username }}</p>
+    {% endif %}
+    <p><strong>Total Bids:</strong> {{ product.bid_count }}</p>
+    <p><strong>End Date:</strong> {{ product.end_time|date:"M d, Y H:i A" }}</p>
+    <p><strong>Time Remaining:</strong> <span id="countdown" style="color:#01205c; font-weight: bold;"></span></p>
+  </div>
+
+  <!-- 💸 Bid Form -->
+{#  {% if product.is_active %}#}
+{#  <form method="POST" style="margin-top: 25px;">#}
+{#    {% csrf_token %}#}
+{#    <input type="number" name="amount" min="{{ product.highest_bid.amount|default:product.starting_price|add:'1' }}" required#}
+{#           placeholder="Enter your bid"#}
+{#           style="width: 100%; padding: 12px; margin-bottom: 10px; border-radius: 8px; border: 1px solid #ccc;">#}
+{#    <button type="submit" id="placeBidBtn"#}
+{#            style="width: 100%; background: #01205c; color: white; padding: 12px; border: none; border-radius: 8px; font-weight: bold;">#}
+{#      Place Bid#}
+{#    </button>#}
+{#  </form>#}
+{#  {% else %}#}
+{#  <p style="margin-top: 20px; text-align: center; font-weight: bold; color: red;">⚠️ Bidding has ended for this product.</p>#}
+{#  {% endif %}#}
+{% if product.is_active %}
+  <form method="POST" style="margin-top: 25px;">
+    {% csrf_token %}
+
+    <label for="amount" style="font-weight: 600; margin-bottom: 8px; display: block;">Your Bid (Rs)</label>
+    <input
+      type="number"
+      name="amount"
+      id="amount"
+      min="{{ product.highest_bid.amount|default:product.starting_price|add:'1' }}"
+      required
+      placeholder="Enter your bid"
+      style="width: 100%; padding: 12px; margin-bottom: 12px; border-radius: 8px; border: 1px solid #ccc; font-size: 16px;"
+    >
+
+    <button type="submit"
+      style="width: 100%; background: #01205c; color: white; padding: 12px; border: none; border-radius: 8px; font-weight: bold; font-size: 16px;">
+      🏷️ Place Bid
+    </button>
+  </form>
+{% else %}
+  <p class="text-danger mt-3" style="text-align: center; font-weight: 600; color: crimson;">
+    ⚠️ Bidding has ended for this product.
+  </p>
+{% endif %}
+
+  <!--  Back Button -->
+  <div style="text-align: center; margin-top: 30px;">
+    <a href="{% url 'bidding_list' %}" style="text-decoration: none; font-weight: bold; color: #4a148c;">← Back to Bidding Page</a>
+  </div>
+</div>
+
+<!-- ✅ Countdown Script -->
+<script>
+  const endTime = new Date("{{ product.end_time|date:'Y-m-d H:i:s' }}").getTime();
+  const countdownElem = document.getElementById("countdown");
+  const bidBtn = document.getElementById("placeBidBtn");
+
+  function updateCountdown() {
+    const now = new Date().getTime();
+    const distance = endTime - now;
+
+    if (distance < 0) {
+      countdownElem.innerHTML = "Bidding Closed";
+      if (bidBtn) bidBtn.disabled = true;
+      return;
+    }
+
+    const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+    const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+    const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+    const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+    countdownElem.innerHTML = `${days}d ${hours}h ${minutes}m ${seconds}s`;
+  }
+
+  updateCountdown();
+  setInterval(updateCountdown, 1000);
+</script>
+
+{% endblock %}

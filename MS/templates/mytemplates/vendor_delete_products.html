@@ -1,0 +1,18 @@
+{% extends 'mytemplates/vendor_dashboard.html' %}
+{% load static %}
+{% block content %}
+    <link rel="stylesheet" href="{% static 'css/vendor_delete_products.css' %}">
+<div class="form-section">
+    <h2>Delete Product</h2>
+    <p>Are you sure you want to delete <strong>{{ product.product_name }}</strong>?</p>
+    <form method="post">
+        {% csrf_token %}
+        <button type="submit" class="delete-btn">Yes, Delete</button>
+        <a href="{% url 'vendor_products' %}" class="cancel-btn">Cancel</a>
+    </form>
+</div>
+{% endblock %}
+
+
+
+

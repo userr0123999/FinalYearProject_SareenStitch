@@ -1,0 +1,36 @@
+{% extends 'mytemplates/index.html' %}
+{% load static %}
+
+{% block content %}
+<link rel="stylesheet" href="{% static 'css/customer_chat.css' %}">
+
+<div class="chat-wrapper">
+  <div class="chat-header">
+    <h2>Chat with {{ vendor.store_name }}</h2>
+  </div>
+
+  <div class="chat-box" id="chatBox">
+    {% for message in messages %}
+      <div class="{% if message.sender == user %}chat-message sender{% else %}chat-message receiver{% endif %}">
+        <p>{{ message.message }}</p>
+        <span class="timestamp">{{ message.timestamp|date:"g:i A" }}</span>
+      </div>
+    {% empty %}
+      <p class="text-center">No messages yet. Start a conversation!</p>
+    {% endfor %}
+  </div>
+
+  <form method="POST" class="chat-form">
+    {% csrf_token %}
+    <input type="hidden" name="vendor_id" value="{{ vendor.id }}">
+    <input type="text" name="message" placeholder="Type a message..." required>
+    <button type="submit"><i class="fas fa-paper-plane"></i></button>
+  </form>
+</div>
+
+<script>
+  // Scroll to bottom automatically
+  const chatBox = document.getElementById('chatBox');
+  chatBox.scrollTop = chatBox.scrollHeight;
+</script>
+{% endblock %}

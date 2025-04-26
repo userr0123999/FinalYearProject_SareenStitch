@@ -1,0 +1,30 @@
+{% extends 'mytemplates/index.html' %}
+{% block content %}
+<div style="max-width: 520px; margin: 100px auto 80px; background: #fff; border-radius: 16px; box-shadow: 0 12px 30px rgba(0, 0, 0, 0.1); padding: 40px 50px; text-align: center; font-family: 'Segoe UI', sans-serif;">
+
+    <h2 style="font-size: 28px; margin-bottom: 25px; color: #4b1e3e;">Your Profile</h2>
+
+    {% if messages %}
+        {% for message in messages %}
+            <div style="background-color: #d6f4dd; color: #256029; padding: 12px 20px; border-radius: 8px; margin-bottom: 20px; font-weight: 500; box-shadow: 0 4px 8px rgba(0,0,0,0.05);">
+                {{ message }}
+            </div>
+        {% endfor %}
+    {% endif %}
+
+    <form method="POST" style="display: flex; flex-direction: column; gap: 18px;">
+        {% csrf_token %}
+
+        <input type="text" name="first_name" value="{{ user.first_name }}" placeholder="Full Name"
+            style="padding: 14px 16px; border-radius: 10px; border: 1px solid #ddd; font-size: 15px; background-color: #fdf7ff;">
+
+        <input type="email" name="email" value="{{ user.email }}" placeholder="Email Address"
+            style="padding: 14px 16px; border-radius: 10px; border: 1px solid #ddd; font-size: 15px; background-color: #fdf7ff;">
+
+        <button type="submit"
+            style="background: linear-gradient(to right, #e37cba, #a763e1); color: white; font-size: 16px; padding: 14px; border-radius: 10px; border: none; cursor: pointer; font-weight: bold; transition: background 0.3s ease;">
+            Update Profile
+        </button>
+    </form>
+</div>
+{% endblock %}

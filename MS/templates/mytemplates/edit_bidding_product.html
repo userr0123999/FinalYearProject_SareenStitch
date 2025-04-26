@@ -1,0 +1,33 @@
+{% extends 'mytemplates/admin_dashboard.html' %}
+{% load static %}
+
+{% block content %}
+<section style="padding: 40px; background: #f9f4fb; min-height: 100vh;">
+  <div style="max-width: 600px; margin: auto; background: white; padding: 30px 40px; border-radius: 12px; box-shadow: 0 8px 20px rgba(0,0,0,0.08);">
+
+    <h2 style="text-align: center; font-size: 26px; color: #4a148c; margin-bottom: 25px;">
+      ✏️ Edit Bidding Product
+    </h2>
+
+    <form method="POST" enctype="multipart/form-data" style="display: flex; flex-direction: column; gap: 20px;">
+      {% csrf_token %}
+      {{ form.as_p }}
+
+      <button type="submit" style="
+        padding: 12px;
+        background-color: #4a148c;
+        color: white;
+        border: none;
+        border-radius: 8px;
+        font-weight: bold;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+      ">💾 Update Product</button>
+    </form>
+
+    <div style="text-align: center; margin-top: 20px;">
+      <a href="{% url 'admin_bidding' %}" style="color: #555; text-decoration: underline;">← Back to Bidding Dashboard</a>
+    </div>
+  </div>
+</section>
+{% endblock %}

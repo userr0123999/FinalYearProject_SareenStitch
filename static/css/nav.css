@@ -1,0 +1,297 @@
+/* ---------------- Header ---------------- */
+header {
+  background-color: #ffe4ec;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 60px;
+}
+
+.logo-img {
+  width: 80px;
+  object-fit: contain;
+}
+
+/* ---------------- Nav ---------------- */
+nav {
+  display: flex;
+  align-items: center;
+  gap: 25px;
+  font-weight: bold;
+}
+
+nav a {
+  text-decoration: none;
+  color: #2c3e50;
+  font-size: 20px;
+  transition: color 0.3s ease;
+}
+
+nav a:hover,
+nav a.active {
+  color: #001f5b;
+}
+
+nav a.admin-link {
+  color: #8a0745;
+  font-weight: bold;
+}
+
+nav input {
+  padding: 8px;
+  border: 1px solid #001f5b;
+  border-radius: 5px;
+  font-size: 15px;
+  width: 200px;
+  background-color: #fff;
+  color: #001f5b;
+}
+
+nav i {
+  font-size: 20px;
+  color: #001f5b;
+}
+
+/* ---------------- Icons ---------------- */
+.icons {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  font-size: 27px;
+  color: #001f5b;
+}
+
+.icons i {
+  cursor: pointer;
+}
+
+/* ---------------- User Dropdown ---------------- */
+.user-dropdown {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+}
+
+.user-name {
+  font-weight: bold;
+  font-size: 16px;
+  color: #001f5b;
+  white-space: nowrap;
+}
+
+.dropdown-menu {
+  display: none;
+  position: absolute;
+  top: 50px;
+  right: 0;
+  background-color: #ffe4ec;
+  border: 1px solid #001f5b;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  padding: 10px;
+  min-width: 160px;
+  z-index: 1000;
+}
+
+.dropdown-item-text {
+  font-weight: bold;
+  padding: 8px 14px;
+  display: block;
+  border-bottom: 1px solid #001f5b;
+  margin-bottom: 5px;
+}
+
+.dropdown-menu .dropdown-item {
+  display: block;
+  padding: 8px 14px;
+  color: #001f5b;
+  text-decoration: none;
+}
+
+.dropdown-menu .dropdown-item:hover {
+  background-color: #fce4ee;
+  border-radius: 5px;
+  color: #8a0745;
+}
+
+/* ---------------- Notification Dropdown ---------------- */
+.notification-dropdown {
+  position: relative;
+  display: inline-block;
+  margin-left: 15px;
+}
+
+.notification-dropdown a {
+  position: relative;
+  font-size: 18px;
+  color: #001f5b;
+}
+
+.notif-count {
+  position: absolute;
+  top: -6px;
+  right: -8px;
+  background: red;
+  color: white;
+  font-size: 11px;
+  font-weight: bold;
+  padding: 2px 6px;
+  border-radius: 50%;
+  line-height: 1;
+}
+
+.notif-box {
+  position: absolute;
+  right: 0;
+  top: 35px;
+  width: 290px;
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.1);
+  padding: 12px;
+  display: none;
+  z-index: 9999;
+}
+
+.notif-tabs {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.notif-tabs button {
+  flex: 1;
+  border: none;
+  background: #eee;
+  padding: 6px 10px;
+  border-radius: 6px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background 0.2s;
+  margin: 0 2px;
+}
+
+.notif-tabs button:hover {
+  background: #ddd;
+}
+
+.tab-content {
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+.notif-item {
+  font-size: 14px;
+  padding: 10px 8px;
+  border-bottom: 1px solid #eee;
+  line-height: 1.5;
+}
+
+.notif-item a {
+  font-size: 13px;
+  color: #007bff;
+  text-decoration: underline;
+}
+
+.no-msg {
+  text-align: center;
+  font-style: italic;
+  color: #888;
+  padding: 15px 0;
+}
+
+/* Scrollbar Customization */
+.tab-content::-webkit-scrollbar {
+  width: 6px;
+}
+
+.tab-content::-webkit-scrollbar-thumb {
+  background-color: #ccc;
+  border-radius: 10px;
+}
+
+/* 📩 Notification Dropdown */
+.notification-dropdown {
+  position: relative;
+}
+
+.notification-dropdown > a {
+  color: #001f5b;
+  position: relative;
+  font-size: 22px;
+  text-decoration: none;
+}
+
+.notif-count {
+  position: absolute;
+  top: -6px;
+  right: -8px;
+  background: red;
+  color: white;
+  font-size: 11px;
+  font-weight: bold;
+  padding: 2px 6px;
+  border-radius: 50%;
+  line-height: 1;
+}
+
+.notif-box {
+  display: none;
+  position: absolute;
+  top: 30px;
+  right: 0;
+  background-color: #fff;
+  width: 300px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+  border-radius: 10px;
+  z-index: 1000;
+  padding: 10px;
+}
+
+.notif-tabs {
+  display: flex;
+  justify-content: space-between;
+  border-bottom: 1px solid #ddd;
+  margin-bottom: 10px;
+}
+
+.notif-tabs button {
+  flex: 1;
+  padding: 8px;
+  border: none;
+  background-color: #ffe4ec;
+  font-weight: bold;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.notif-tabs button:hover {
+  background-color: #fbd3e0;
+}
+
+.tab-content {
+  max-height: 180px;
+  overflow-y: auto;
+}
+
+.notif-item {
+  font-size: 14px;
+  padding: 6px 0;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.notif-item a {
+  font-size: 13px;
+  color: #007bff;
+  text-decoration: underline;
+}
+
+.no-msg {
+  font-style: italic;
+  color: #aaa;
+  padding: 10px 0;
+  text-align: center;
+}

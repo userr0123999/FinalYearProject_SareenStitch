@@ -1,0 +1,96 @@
+{% extends 'mytemplates/admin_dashboard.html' %}
+{% load static %}
+{% block content %}
+<h1>Total Messages</h1>
+
+<div class="table-container">
+  <table>
+    <thead>
+      <tr>
+        <th>S.N.</th>
+        <th>Full Name</th>
+        <th>Email</th>
+        <th>Contact</th>
+        <th>Message</th>
+        <th>Action</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for message in page_obj %}
+      <tr>
+        <td>{{ forloop.counter }}</td>
+        <td>{{ message.full_name }}</td>
+        <td>{{ message.email }}</td>
+        <td>{{ message.contact }}</td>
+        <td>{{ message.message|truncatechars:50 }}</td>
+        <td>
+          <button class="view-btn" data-name="{{ message.full_name }}" data-message="{{ message.message }}">View</button>
+        </td>
+      </tr>
+      {% empty %}
+      <tr><td colspan="6">No messages found.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+<!-- Pagination -->
+<div class="pagination">
+  {% if page_obj.has_previous %}
+    <a href="?page={{ page_obj.previous_page_number }}">« Prev</a>
+  {% endif %}
+  <span class="current-page">Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
+  {% if page_obj.has_next %}
+    <a href="?page={{ page_obj.next_page_number }}">Next »</a>
+  {% endif %}
+</div>
+
+<!-- Modal -->
+<div id="messageModal" class="modal">
+  <div class="modal-content">
+    <span class="close">&times;</span>
+    <h3 id="modalName"></h3>
+    <p id="modalMessage"></p>
+  </div>
+</div>
+
+<!-- Modal Styles -->
+<style>
+.modal { display: none; position: fixed; z-index: 1000; padding-top: 100px; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.4); }
+.modal-content { background-color: #fff; margin: auto; padding: 20px; border-radius: 8px; width: 60%; box-shadow: 0 5px 10px rgba(0,0,0,0.2); }
+.close { float: right; font-size: 28px; font-weight: bold; cursor: pointer; color: #000; }
+.view-btn { padding: 6px 12px; border: none; background: #000; color: #fff; cursor: pointer; border-radius: 5px; }
+.view-btn:hover { background-color: #333; }
+.pagination { margin-top: 20px; text-align: center; }
+.pagination a { margin: 0 10px; text-decoration: none; color: #000; }
+.current-page { font-weight: bold; }
+</style>
+
+<!-- Modal Script -->
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  const modal = document.getElementById("messageModal");
+  const span = document.querySelector(".close");
+  const modalName = document.getElementById("modalName");
+  const modalMessage = document.getElementById("modalMessage");
+
+  document.querySelectorAll(".view-btn").forEach(button => {
+    button.addEventListener("click", () => {
+      modalName.textContent = button.dataset.name;
+      modalMessage.textContent = button.dataset.message;
+      modal.style.display = "block";
+    });
+  });
+
+  span.onclick = function() {
+    modal.style.display = "none";
+  }
+
+  window.onclick = function(event) {
+    if (event.target == modal) {
+      modal.style.display = "none";
+    }
+  }
+});
+</script>
+{% endblock %}

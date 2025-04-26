@@ -1,0 +1,53 @@
+{% extends 'mytemplates/index.html' %}
+{% load static %}
+
+{% block content %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.css">
+<link rel="stylesheet" href="{% static 'css/contact.css' %}">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+
+<section class="contact-container">
+    <!-- 💖 Hero Box -->
+    <div class="hero-box" data-aos="fade-down">
+        <h1>Let's Connect with <span class="brand">Saree & Stitch</span></h1>
+        <p>We’re here for your questions, collaborations, or just a fashionable hello!</p>
+    </div>
+
+    <!-- 📨 Contact Info + Form -->
+    <div class="contact-card contact-section" data-aos="fade-up">
+        <div class="card-left">
+            <h2>Contact Information</h2>
+            <p><i class="fas fa-map-marker-alt"></i> Raniban, Kathmandu</p>
+            <p><i class="fas fa-envelope"></i> sareenstitch@gmail.com</p>
+            <p><i class="fas fa-phone"></i> +977 9869794114</p>
+            <p><i class="fas fa-clock"></i> Sun–Fri: 9:00 AM – 6:00 PM</p>
+        </div>
+
+        <div class="card-right">
+            <h2>Send a Message</h2>
+            <form action="{% url 'contact' %}" method="POST">
+                {% csrf_token %}
+                <input type="text" name="full_name" placeholder="Full Name" required>
+                <input type="email" name="email" placeholder="Email Address" required>
+                <input type="text" name="contact" placeholder="Contact Number" required>
+                <textarea name="message" rows="4" placeholder="Your Message..." required></textarea>
+                <button type="submit"><i class="fas fa-paper-plane"></i> Send</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- 🗺 Map Section -->
+    <div class="map-container" data-aos="fade-up">
+        <h2 style="text-align: center; margin-bottom: 20px;">Our Location</h2>
+        <iframe
+            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3532.398865317389!2d85.31122371505983!3d27.70723333116682!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x39eb1908d8b68bfb%3A0xe61e4f36db2e6c91!2sRaniban%2C%20Kathmandu%2044600!5e0!3m2!1sen!2snp!4v1713450012345"
+            width="100%" height="300" style="border:0;" allowfullscreen="" loading="lazy">
+        </iframe>
+    </div>
+</section>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.js"></script>
+<script>
+  AOS.init({ duration: 1000, once: true });
+</script>
+{% endblock %}

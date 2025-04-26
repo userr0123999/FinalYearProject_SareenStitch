@@ -1,0 +1,14 @@
+{% extends 'mytemplates/admin_dashboard.html' %}
+
+{% block content %}
+<div style="text-align: center; padding: 50px;">
+  <h2 style="color: #d32f2f;">🗑 Confirm Deletion</h2>
+  <p>Are you sure you want to delete <strong>{{ product.product_name }}</strong> from bidding?</p>
+
+  <form method="POST">
+    {% csrf_token %}
+    <button type="submit" style="background: #d32f2f; color: white; padding: 10px 20px; border: none; border-radius: 6px; margin-right: 10px;">Yes, Delete</button>
+    <a href="{% url 'admin_bidding' %}" style="background: #4caf50; color: white; padding: 10px 20px; border-radius: 6px; text-decoration: none;">Cancel</a>
+  </form>
+</div>
+{% endblock %}

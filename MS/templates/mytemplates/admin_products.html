@@ -1,0 +1,46 @@
+{% extends 'mytemplates/admin_dashboard.html' %}
+{% block content %}
+<h2>Manage Products</h2>
+
+<a href="{% url 'create_product' %}" class="btn-add">Add Product</a>
+
+<div class="table-container">
+  <table class="product-table">
+    <thead>
+      <tr>
+        <th>S.N.</th> <!-- Added Serial Number Column -->
+        <th>Image</th>
+        <th>Name</th>
+        <th>Price (Rs)</th>
+        <th>Quantity</th>
+        <th>Size</th>
+        <th>Category</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for product in products %}
+      <tr class="{% cycle 'row-light' 'row-dark' %}">
+        <td>{{ forloop.counter }}</td> <!-- Serial Number -->
+        <td>
+          {% if product.image %}
+            <img src="{{ product.image.url }}" width="60" />
+          {% endif %}
+        </td>
+        <td>{{ product.product_name }}</td>
+        <td>{{ product.price }}</td>
+        <td>{{ product.quantity }}</td>
+        <td>{{ product.size }}</td>
+        <td>{{ product.category }}</td>
+        <td>
+          <a href="{% url 'update_product' pk=product.id %}" class="btn-edit">Edit</a>
+          <a href="{% url 'delete_product' pk=product.id %}" class="btn-delete">Delete</a>
+        </td>
+      </tr>
+      {% empty %}
+      <tr><td colspan="8">No products found.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

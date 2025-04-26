@@ -1,0 +1,136 @@
+.form-wrapper {
+  max-width: 900px;
+  margin: 40px auto;
+  background-color: #fff;
+  padding: 30px 40px;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+}
+
+.form-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 25px;
+}
+
+.form-header h2 {
+  font-size: 26px;
+  font-weight: 600;
+  color: #3a3a3a;
+}
+
+.back-btn {
+  text-decoration: none;
+  font-size: 14px;
+  color: #5c4dd4;
+  border: 1px solid #5c4dd4;
+  padding: 6px 12px;
+  border-radius: 6px;
+  transition: 0.3s;
+}
+
+.back-btn:hover {
+  background-color: #5c4dd4;
+  color: #fff;
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 25px 30px;
+}
+
+.form-group {
+  margin-bottom: 20px;
+}
+
+.form-group label {
+  font-weight: 600;
+  margin-bottom: 8px;
+  display: block;
+}
+
+.form-group ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.form-group li {
+  margin-bottom: 6px;
+}
+
+.form-group input[type="checkbox"] {
+  margin-right: 8px;
+}
+
+.form-wrapper {
+  background: #fff;
+  padding: 30px 40px;
+  border-radius: 8px;
+  max-width: 900px;
+  margin: 40px auto;
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+}
+
+.form-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 25px;
+}
+
+.form-header h2 {
+  font-size: 24px;
+  font-weight: bold;
+}
+
+.back-btn {
+  font-size: 14px;
+  background: transparent;
+  border: 1px solid #999;
+  padding: 6px 12px;
+  text-decoration: none;
+  border-radius: 5px;
+  color: #444;
+  transition: 0.3s ease;
+}
+
+.back-btn:hover {
+  background: #eee;
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 25px;
+}
+
+input[type="text"],
+textarea,
+select,
+input[type="number"],
+input[type="file"] {
+  width: 100%;
+  padding: 10px 14px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  font-size: 14px;
+  font-family: inherit;
+}
+
+.submit-btn {
+  margin-top: 30px;
+  padding: 10px 25px;
+  background: #000;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.submit-btn:hover {
+  background-color: #222;
+}

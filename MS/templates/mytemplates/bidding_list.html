@@ -1,0 +1,305 @@
+{#{% extends 'mytemplates/index.html' %}#}
+{#{% load static %}#}
+{##}
+{#{% block content %}#}
+{#<section style="background: linear-gradient(to right, #fce4ec, #f3e5f5); min-height: 100vh; padding: 40px 20px;">#}
+{#  <h2 style="text-align: center; font-size: 32px; font-weight: bold; color: #4a148c; margin-bottom: 40px;">🔔 Bidding Products</h2>#}
+{##}
+{#  <div style="display: flex; flex-wrap: wrap; justify-content: center; gap: 30px;">#}
+{#    {% for product in products %}#}
+{#    <div style="width: 280px; background: white; border-radius: 12px; padding: 20px; box-shadow: 0 6px 18px rgba(0,0,0,0.08); text-align: center; transition: 0.3s;">#}
+{#      <img src="{{ product.image.url }}" alt="{{ product.product_name }}"#}
+{#           style="width: 100%; height: 260px; object-fit: cover; border-radius: 10px; margin-bottom: 15px;">#}
+{#      <h4 style="font-size: 18px; font-weight: 600;">{{ product.product_name }}</h4>#}
+{#      <p style="color: #777; font-size: 14px; margin-bottom: 8px;">{{ product.description|truncatechars:40 }}</p>#}
+{##}
+{#      <p style="font-size: 14px; color: green;"><strong>Start:</strong> Rs {{ product.starting_price }}</p>#}
+{#      <p style="font-size: 14px; color: red;"><strong>Highest:</strong> Rs {{ product.highest_bid.amount|default:product.starting_price }}</p>#}
+{#      <p style="font-size: 13px; margin: 4px 0;"><strong>Ends:</strong> {{ product.end_time|date:"M d, Y H:i" }}</p>#}
+{#      <p style="font-size: 14px;"><strong>Time Left:</strong> <span id="timer{{ forloop.counter }}" style="font-weight: bold; color: #6a1b9a;"></span></p>#}
+{##}
+{#      <!-- Buttons -->#}
+{#      <div style="margin-top: 15px; display: flex; justify-content: center; gap: 10px;">#}
+{#        <a href="{% url 'bidding_detail' product.id %}"#}
+{#           style="padding: 10px 18px; background: #5e35b1; color: white; text-decoration: none; border-radius: 8px; font-size: 14px;">#}
+{#          View Details#}
+{#        </a>#}
+{##}
+{#        {% if product.is_active %}#}
+{#        <button onclick="openBidModal('{{ product.id }}', '{{ product.product_name }}')"#}
+{#                style="padding: 10px 18px; background: #000; color: white; border: none; border-radius: 8px; font-size: 14px; cursor: pointer;">#}
+{#          Place Bid#}
+{#        </button>#}
+{#        {% else %}#}
+{#        <button disabled#}
+{#                style="padding: 10px 18px; background: gray; color: white; border: none; border-radius: 8px; font-size: 14px; cursor: not-allowed;">#}
+{#          Bidding Closed#}
+{#        </button>#}
+{#        {% endif %}#}
+{#      </div>#}
+{#    </div>#}
+{##}
+{#    <script>#}
+{#      function countdown{{ forloop.counter }}() {#}
+{#        const timer = document.getElementById("timer{{ forloop.counter }}");#}
+{#        const end = new Date("{{ product.end_time|date:'Y-m-d H:i:s' }}").getTime();#}
+{#        const interval = setInterval(() => {#}
+{#          const now = new Date().getTime();#}
+{#          const dist = end - now;#}
+{##}
+{#          if (dist <= 0) {#}
+{#            timer.innerHTML = "Bidding Closed";#}
+{#            clearInterval(interval);#}
+{#          } else {#}
+{#            const days = Math.floor(dist / (1000 * 60 * 60 * 24));#}
+{#            const hours = Math.floor((dist % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));#}
+{#            const mins = Math.floor((dist % (1000 * 60 * 60)) / (1000 * 60));#}
+{#            const secs = Math.floor((dist % (1000 * 60)) / 1000);#}
+{#            timer.innerHTML = `${days}d ${hours}h ${mins}m ${secs}s`;#}
+{#          }#}
+{#        }, 1000);#}
+{#      }#}
+{#      countdown{{ forloop.counter }}();#}
+{#    </script>#}
+{#    {% endfor %}#}
+{#  </div>#}
+{#</section>#}
+{##}
+{#<!-- 💬 Place Bid Modal -->#}
+{#<div class="modal fade" id="bidModal" tabindex="-1" aria-hidden="true">#}
+{#  <div class="modal-dialog modal-dialog-centered">#}
+{#    <div class="modal-content p-4 rounded-4">#}
+{#      <div class="modal-header border-0">#}
+{#        <h5 class="modal-title fw-bold">💸 Place Bid</h5>#}
+{#        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>#}
+{#      </div>#}
+{##}
+{#      <form method="POST" action="{% url 'place_bid' 0 %}" id="bidForm">#}
+{#        {% csrf_token %}#}
+{#        <input type="hidden" name="product_id" id="modalBidProductId">#}
+{#        <div class="modal-body">#}
+{#          <p style="font-weight: bold;" id="modalBidTitle">You are bidding for: </p>#}
+{#          <div class="mb-3">#}
+{#            <label>Enter your bid amount (Rs):</label>#}
+{#            <input type="number" name="amount" class="form-control" placeholder="e.g. 15000" required>#}
+{#          </div>#}
+{#        </div>#}
+{#        <div class="modal-footer border-0">#}
+{#          <button type="submit" class="btn btn-dark w-100 fw-bold">Submit Bid</button>#}
+{#        </div>#}
+{#      </form>#}
+{#    </div>#}
+{#  </div>#}
+{#</div>#}
+{##}
+{#<!-- 💫 Script -->#}
+{#<script>#}
+{#  function openBidModal(productId, productName) {#}
+{#    const modal = new bootstrap.Modal(document.getElementById('bidModal'));#}
+{#    document.getElementById('modalBidTitle').innerText = "You are bidding for: " + productName;#}
+{#    document.getElementById('bidForm').action = `/place-bid/${productId}/`;  // dynamically set action#}
+{#    modal.show();#}
+{#  }#}
+{#</script>#}
+{##}
+{#{% endblock %}#}
+{##}
+{##}
+{#{% extends 'mytemplates/index.html' %}#}
+{#{% load static %}#}
+{#{% load custom_filters %}#}
+{##}
+{##}
+{##}
+{#{% block content %}#}
+{#<section style="background: linear-gradient(to right, #fce4ec, #f3e5f5); min-height: 100vh; padding: 40px 20px;">#}
+{#  <h2 style="text-align: center; font-size: 32px; font-weight: bold; color: #4a148c; margin-bottom: 40px;">🔔 Bidding Products</h2>#}
+{##}
+{#  <div style="display: flex; flex-wrap: wrap; justify-content: center; gap: 30px;">#}
+{#    {% for product in products %}#}
+{#    <div style="width: 280px; background: white; border-radius: 12px; padding: 20px; box-shadow: 0 6px 18px rgba(0,0,0,0.08); text-align: center; transition: 0.3s;">#}
+{#      <img src="{{ product.image.url }}" alt="{{ product.product_name }}"#}
+{#           style="width: 100%; height: 260px; object-fit: cover; border-radius: 10px; margin-bottom: 15px;">#}
+{#      <h4 style="font-size: 18px; font-weight: 600;">{{ product.product_name }}</h4>#}
+{#      <p style="color: #777; font-size: 14px; margin-bottom: 8px;">{{ product.description|truncatechars:40 }}</p>#}
+{##}
+{#      <p style="font-size: 14px; color: green;"><strong>Start:</strong> Rs {{ product.starting_price }}</p>#}
+{#      <p style="font-size: 14px; color: red;"><strong>Highest:</strong> Rs {{ product.highest_bid.amount|default:product.starting_price }}</p>#}
+{#      <p style="font-size: 13px; margin: 4px 0;"><strong>Ends:</strong> {{ product.end_time|date:"M d, Y H:i" }}</p>#}
+{##}
+{#      {% if product.end_time <= now %}#}
+{#        {% if product.id in product_winners %}#}
+{#          <p style="font-size: 14px; color: #2e7d32;"><strong>🏆 Winner:</strong> {{ product_winners|get_item:product.id }}</p>#}
+{#        {% else %}#}
+{#          <p style="font-size: 14px; color: #9e9e9e;"><strong>No bids placed.</strong></p>#}
+{#        {% endif %}#}
+{#      {% else %}#}
+{#        <p style="font-size: 14px;"><strong>Time Left:</strong> <span id="timer{{ forloop.counter }}" style="font-weight: bold; color: #6a1b9a;"></span></p>#}
+{#      {% endif %}#}
+{##}
+{#      <div style="margin-top: 15px; display: flex; justify-content: center; gap: 10px;">#}
+{#        <a href="{% url 'bidding_detail' product.id %}"#}
+{#           style="padding: 10px 18px; background: #5e35b1; color: white; text-decoration: none; border-radius: 8px; font-size: 14px;">#}
+{#          View Details#}
+{#        </a>#}
+{##}
+{#        {% if product.end_time > now %}#}
+{#        <button onclick="openBidModal('{{ product.id }}', '{{ product.product_name }}')"#}
+{#                style="padding: 10px 18px; background: #000; color: white; border: none; border-radius: 8px; font-size: 14px; cursor: pointer;">#}
+{#          Place Bid#}
+{#        </button>#}
+{#        {% else %}#}
+{#        <button disabled#}
+{#                style="padding: 10px 18px; background: gray; color: white; border: none; border-radius: 8px; font-size: 14px;">#}
+{#          Bidding Closed#}
+{#        </button>#}
+{#        {% endif %}#}
+{#      </div>#}
+{#    </div>#}
+{##}
+{#    {% if product.end_time > now %}#}
+{#    <script>#}
+{#      function countdown{{ forloop.counter }}() {#}
+{#        const timer = document.getElementById("timer{{ forloop.counter }}");#}
+{#        const end = new Date("{{ product.end_time|date:'Y-m-d H:i:s' }}").getTime();#}
+{#        const interval = setInterval(() => {#}
+{#          const now = new Date().getTime();#}
+{#          const dist = end - now;#}
+{#          if (dist <= 0) {#}
+{#            timer.innerHTML = "Bidding Closed";#}
+{#            clearInterval(interval);#}
+{#          } else {#}
+{#            const days = Math.floor(dist / (1000 * 60 * 60 * 24));#}
+{#            const hours = Math.floor((dist % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));#}
+{#            const mins = Math.floor((dist % (1000 * 60 * 60)) / (1000 * 60));#}
+{#            const secs = Math.floor((dist % (1000 * 60)) / 1000);#}
+{#            timer.innerHTML = `${days}d ${hours}h ${mins}m ${secs}s`;#}
+{#          }#}
+{#        }, 1000);#}
+{#      }#}
+{#      countdown{{ forloop.counter }}();#}
+{#    </script>#}
+{#    {% endif %}#}
+{#    {% endfor %}#}
+{#  </div>#}
+{#</section>#}
+{##}
+{#<!-- Modal Script -->#}
+{#<script>#}
+{#  function openBidModal(productId, productName) {#}
+{#    const modal = new bootstrap.Modal(document.getElementById('bidModal'));#}
+{#    document.getElementById('modalBidTitle').innerText = "You are bidding for: " + productName;#}
+{#    document.getElementById('bidForm').action = `/place-bid/${productId}/`;#}
+{#    modal.show();#}
+{#  }#}
+{#</script>#}
+{#{% endblock %}#}
+{##}
+
+
+{% extends 'mytemplates/index.html' %}
+{% load static %}
+{% block content %}
+
+<section style="background: linear-gradient(to right, #fce4ec, #f3e5f5); min-height: 100vh; padding: 40px 20px;">
+  <h2 style="text-align: center; font-size: 32px; font-weight: bold; color: #4a148c; margin-bottom: 40px;">🔔 Bidding Products</h2>
+
+  <div style="display: flex; flex-wrap: wrap; justify-content: center; gap: 30px;">
+    {% for product in products %}
+    <div style="width: 280px; background: white; border-radius: 12px; padding: 20px; box-shadow: 0 6px 18px rgba(0,0,0,0.08); text-align: center;">
+      <img src="{{ product.image.url }}" alt="{{ product.product_name }}"
+           style="width: 100%; height: 260px; object-fit: cover; border-radius: 10px; margin-bottom: 15px;">
+
+      <h4 style="font-size: 18px; font-weight: 600;">{{ product.product_name }}</h4>
+      <p style="color: #777; font-size: 14px; margin-bottom: 8px;">{{ product.description|truncatechars:40 }}</p>
+
+      <p style="font-size: 14px; color: green;"><strong>Start:</strong> Rs {{ product.starting_price }}</p>
+      <p style="font-size: 14px; color: red;"><strong>Highest:</strong> Rs {{ product.highest_bid.amount|default:product.starting_price }}</p>
+      <p style="font-size: 13px;"><strong>Ends:</strong> {{ product.end_time|date:"M d, Y H:i" }}</p>
+      <p style="font-size: 14px;"><strong>Time Left:</strong> <span id="timer{{ forloop.counter }}" style="font-weight: bold; color: #6a1b9a;"></span></p>
+
+      <div style="margin-top: 15px; display: flex; justify-content: center; gap: 10px;">
+        <a href="{% url 'bidding_detail' product.id %}"
+           style="padding: 10px 18px; background: #5e35b1; color: white; text-decoration: none; border-radius: 8px; font-size: 14px;">
+          View Details
+        </a>
+
+        {% if product.is_active %}
+        <button onclick="openBidModal('{{ product.id }}', '{{ product.product_name }}')"
+                style="padding: 10px 18px; background: #000; color: white; border: none; border-radius: 8px; font-size: 14px; cursor: pointer;">
+          Place Bid
+        </button>
+        {% else %}
+        <button disabled
+                style="padding: 10px 18px; background: gray; color: white; border: none; border-radius: 8px; font-size: 14px;">
+          Bidding Closed
+        </button>
+        {% endif %}
+      </div>
+    </div>
+
+    <!-- Countdown script for each product -->
+    <script>
+      function countdown{{ forloop.counter }}() {
+        const timer = document.getElementById("timer{{ forloop.counter }}");
+        const end = new Date("{{ product.end_time|date:'Y-m-d H:i:s' }}").getTime();
+        const interval = setInterval(() => {
+          const now = new Date().getTime();
+          const dist = end - now;
+
+          if (dist <= 0) {
+            timer.innerHTML = "Bidding Closed";
+            clearInterval(interval);
+          } else {
+            const days = Math.floor(dist / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((dist % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const mins = Math.floor((dist % (1000 * 60 * 60)) / (1000 * 60));
+            const secs = Math.floor((dist % (1000 * 60)) / 1000);
+            timer.innerHTML = `${days}d ${hours}h ${mins}m ${secs}s`;
+          }
+        }, 1000);
+      }
+      countdown{{ forloop.counter }}();
+    </script>
+    {% endfor %}
+  </div>
+</section>
+
+<!-- 💬 Place Bid Modal -->
+<div class="modal fade" id="bidModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content p-4 rounded-4">
+      <div class="modal-header border-0">
+        <h5 class="modal-title fw-bold">💸 Place Bid</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+
+      <form method="POST" action="{% url 'place_bid' 0 %}" id="bidForm">
+        {% csrf_token %}
+        <input type="hidden" name="product_id" id="modalBidProductId">
+        <div class="modal-body">
+          <p style="font-weight: bold;" id="modalBidTitle">You are bidding for: </p>
+          <div class="mb-3">
+            <label>Enter your bid amount (Rs):</label>
+            <input type="number" name="amount" class="form-control" placeholder="e.g. 15000" required>
+          </div>
+        </div>
+        <div class="modal-footer border-0">
+          <button type="submit" class="btn btn-dark w-100 fw-bold">Submit Bid</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Setup Script -->
+<script>
+  function openBidModal(productId, productName) {
+    const modal = new bootstrap.Modal(document.getElementById('bidModal'));
+    document.getElementById('modalBidTitle').innerText = "You are bidding for: " + productName;
+    document.getElementById('bidForm').action = `/place-bid/${productId}/`;
+    modal.show();
+  }
+</script>
+
+{% endblock %}

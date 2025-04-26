@@ -1,0 +1,67 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Saree & Stitch </title>
+
+  <!-- ✅ Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+
+  <!-- ✅ Custom CSS -->
+  <link rel="stylesheet" href="{% static 'css/nav.css' %}">
+
+    <!-- ✅ Bootstrap CSS -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
+
+  <!-- ✅ Inline Styles -->
+  <style>
+    body {
+      background-color: #ffe4ec; /* baby pink */
+    }
+
+    .position-toast-center {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      z-index: 1055;
+      min-width: 300px;
+    }
+
+    .toast {
+      font-size: 1rem;
+      padding: 1rem 1.5rem;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+    }
+
+    .toast-success {
+      background: linear-gradient(to right, #001f5b, #001a4d); /* navy blue shades */
+      color: white;
+    }
+
+    .toast-error {
+      background: linear-gradient(to right, #c1126b, #8a0745); /* deeper pinkish-red tones */
+      color: white;
+    }
+
+    .toast-warning {
+      background: linear-gradient(to right, #ffb6c1, #ffccdd); /* soft pink tones */
+      color: navy;
+    }
+
+    .toast-body {
+      font-weight: 500;
+      text-align: center;
+      width: 100%;
+    }
+
+    .btn-close-white {
+      filter: brightness(0) invert(1);
+    }
+</style>
+</head>
+
+
+

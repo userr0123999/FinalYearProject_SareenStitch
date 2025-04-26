@@ -1,0 +1,76 @@
+{% extends 'mytemplates/vendor_dashboard.html' %}
+{% load static %}
+
+{% block content %}
+<link rel="stylesheet" href="{% static 'css/vendor_payment_report.css' %}">
+
+<div class="main-content">
+  <h2>💳 Payment Report</h2>
+
+  <!-- Filters -->
+  <form method="get" style="display: flex; gap: 15px; flex-wrap: wrap; margin-bottom: 30px; align-items: center;">
+    <label><strong>Method:</strong></label>
+    <select name="method" onchange="this.form.submit()" class="form-select" style="padding: 6px 10px;">
+      <option value="">All</option>
+      <option value="eSewa" {% if selected_method == "eSewa" %}selected{% endif %}>eSewa</option>
+      <option value="COD" {% if selected_method == "COD" %}selected{% endif %}>Cash on Delivery</option>
+    </select>
+
+    <label><strong>Start Date:</strong></label>
+    <input type="date" name="start_date" value="{{ start_date }}" class="form-control">
+
+    <label><strong>End Date:</strong></label>
+    <input type="date" name="end_date" value="{{ end_date }}" class="form-control">
+
+    <button type="submit" class="btn btn-success px-4">Filter</button>
+
+    <a href="{% url 'export_vendor_report' %}" class="btn-add" style="margin-left: auto;">📤 Export to Excel</a>
+  </form>
+
+  <!-- Totals -->
+  <div class="revenue-summary">
+    <div><strong>eSewa Total:</strong> <span style="color: green;">Rs. {{ esewa_total }}</span></div>
+    <div><strong>Cash on Delivery:</strong> <span style="color: #ffc107;">Rs. {{ cod_total }}</span></div>
+  </div>
+
+  <!-- Orders Table -->
+  <div class="table-container">
+    <table class="product-table">
+      <thead>
+        <tr>
+          <th>Order ID</th>
+          <th>Product</th>
+          <th>Customer</th>
+          <th>Amount (Rs)</th>
+          <th>Payment</th>
+          <th>Status</th>
+          <th>Date</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for order in orders %}
+        <tr>
+          <td>{{ order.id }}</td>
+          <td>{{ order.product.product_name }}</td>
+          <td>{{ order.user.username }}</td>
+          <td>{{ order.total_price }}</td>
+          <td>
+            <span class="badge {% if order.payment_method == 'eSewa' %}badge-success{% else %}badge-warning{% endif %}">
+              {{ order.payment_method }}
+            </span>
+          </td>
+          <td>
+            <span class="status-badge {{ order.status|lower }}">
+              {{ order.status|title }}
+            </span>
+          </td>
+          <td>{{ order.order_date|date:"M d, Y" }}</td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="7">No orders found.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

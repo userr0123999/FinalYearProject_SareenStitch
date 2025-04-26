@@ -1,0 +1,51 @@
+{% extends 'mytemplates/index.html' %}
+{% load static %}
+
+{% block content %}
+<link rel="stylesheet" href="{% static 'css/homee.css' %}">
+
+<!-- ✅ Preloader -->
+<div id="preloader">
+  <div class="spinner">
+    <img src="{% static 'images/logo.jpg' %}" alt="Loading...">
+  </div>
+</div>
+
+{#<!-- ✅ Toast Messages -->#}
+{#{% if messages %}#}
+{#<div id="toast-container">#}
+{#  {% for message in messages %}#}
+{#    <div class="toast">{{ message }}</div>#}
+{#  {% endfor %}#}
+{#</div>#}
+{#{% endif %}#}
+
+<!-- ✅ Hero Section -->
+<div class="container">
+  <h1>Drape yourself in culture. Welcome to <span class="highlight">Saree & Stitch</span></h1>
+  <p>Your one-stop destination for timeless tradition and elegance.</p>
+
+  <video autoplay muted loop>
+    <source src="{% static 'videos/startingvideo.mp4' %}" type="video/mp4">
+  </video>
+
+  <div class="button-group">
+    <a href="{% url 'register' %}" class="btn">Register Now</a>
+    <a href="{% url 'login' %}" class="btn">Login Now</a>
+  </div>
+</div>
+
+<!-- ✅ JS for Preloader + Toast -->
+<script>
+  window.addEventListener('load', () => {
+    const preloader = document.getElementById('preloader');
+    preloader.style.opacity = '0';
+    preloader.style.visibility = 'hidden';
+    preloader.style.transition = 'opacity 0.5s ease';
+
+    setTimeout(() => {
+      document.querySelectorAll('.toast').forEach(el => el.style.display = 'none');
+    }, 3500);
+  });
+</script>
+{% endblock %}

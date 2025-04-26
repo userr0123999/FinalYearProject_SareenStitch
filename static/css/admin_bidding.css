@@ -1,0 +1,185 @@
+/* General Dashboard Section */
+.dashboard-section {
+    margin-top: 20px;
+    padding: 20px;
+}
+
+.section-title {
+    font-size: 26px;
+    margin-bottom: 10px;
+    color: #333;
+}
+
+/* Filter Links */
+.filter-links {
+    margin-bottom: 15px;
+    font-weight: bold;
+}
+
+.filter-links a {
+    color: #007bff;
+    text-decoration: none;
+    margin-right: 10px;
+}
+
+.filter-links a:hover {
+    text-decoration: underline;
+}
+
+/* Add Section */
+.add-section {
+    margin-bottom: 20px;
+}
+
+.add-section button {
+    background-color: #4caf50;
+    border: none;
+    color: white;
+    padding: 8px 14px;
+    cursor: pointer;
+    font-weight: 600;
+    border-radius: 6px;
+}
+
+/* Hidden Form for Add New Bidding Item */
+.hidden-form {
+    display: none;
+    margin-top: 10px;
+    padding: 10px;
+    background: #f9f9f9;
+    border-left: 4px solid #4caf50;
+}
+
+.hidden-form.show {
+    display: block;
+}
+
+/* Bidding Table */
+.bidding-table {
+    width: 100%;
+    border-collapse: collapse;
+    background-color: #fff;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+}
+
+.bidding-table th, .bidding-table td {
+    padding: 12px 15px;
+    border-bottom: 1px solid #eee;
+    text-align: center;
+}
+
+.bidding-table th {
+    background-color: #f4f4f4;
+    color: #444;
+    font-weight: bold;
+}
+
+.bidding-table tr:hover {
+    background-color: #fafafa;
+}
+
+/* Bidding Product Status Badges */
+.badge-success {
+    background-color: #4caf50;
+    padding: 4px 10px;
+    color: white;
+    border-radius: 4px;
+}
+
+.badge-danger {
+    background-color: #f44336;
+    padding: 4px 10px;
+    color: white;
+    border-radius: 4px;
+}
+
+/* Button Styling for Approve/Delete Actions */
+.btn-approve, .btn-delete {
+    padding: 6px 10px;
+    font-size: 13px;
+    text-decoration: none;
+    border-radius: 4px;
+    color: white;
+    font-weight: bold;
+}
+
+.btn-approve {
+    background-color: #2196f3;
+}
+
+.btn-delete {
+    background-color: #f44336;
+}
+
+.btn-approve:hover, .btn-delete:hover {
+    opacity: 0.8;
+}
+
+/* Modal Styling for Deletion */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    padding-top: 100px;
+}
+
+.modal-content {
+    background-color: #fff;
+    margin: auto;
+    padding: 20px;
+    border-radius: 4px;
+    width: 40%;
+}
+
+.modal-content button {
+    padding: 10px 20px;
+    border: none;
+    background-color: #ff6b6b;
+    color: white;
+    font-weight: bold;
+}
+
+.modal-content .btn-cancel {
+    background-color: #ddd;
+}
+
+/* Toast Notification Styles */
+#toast {
+    background-color: #333;
+    color: white;
+    padding: 10px;
+    position: fixed;
+    top: 10px;
+    right: 10px;
+    border-radius: 5px;
+    z-index: 9999;
+    font-size: 16px;
+    display: none;
+}
+
+/* Styling for the table row with hover effect */
+.bidding-table tr:hover {
+    background-color: #f1f1f1;
+}
+
+#deleteModal .btn-danger {
+    background-color: #d9534f;
+}
+
+#deleteModal .btn-cancel {
+    background-color: #5bc0de;
+}
+
+.badge-success {
+    color: #28a745;
+}
+
+.badge-danger {
+    color: #dc3545;
+}
+

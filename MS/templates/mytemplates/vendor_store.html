@@ -1,0 +1,113 @@
+{% extends 'mytemplates/index.html' %}
+{% load static %}
+{% load humanize %}
+
+{% block content %}
+<h2 style="text-align:center; font-size: 32px; margin: 40px 0 20px;">🛍️ {{ vendor.store_name }} Collection</h2>
+
+<!-- 🔍 Filter Form -->
+<form method="GET" style="text-align:center; margin-bottom: 30px;">
+  <select name="category" style="padding: 8px 12px; border-radius: 6px; border: 1px solid #ccc; margin-right: 10px;">
+    <option value="">All Categories</option>
+    <option value="Saree" {% if request.GET.category == 'Saree' %}selected{% endif %}>Saree</option>
+    <option value="Kurtha" {% if request.GET.category == 'Kurtha' %}selected{% endif %}>Kurtha</option>
+    <option value="Lehenga" {% if request.GET.category == 'Lehenga' %}selected{% endif %}>Lehenga</option>
+  </select>
+
+  <select name="age_group" style="padding: 8px 12px; border-radius: 6px; border: 1px solid #ccc; margin-right: 10px;">
+    <option value="">All Age Groups</option>
+    <option value="8-10" {% if request.GET.age_group == '8-10' %}selected{% endif %}>8–10 Years</option>
+    <option value="11-14" {% if request.GET.age_group == '11-14' %}selected{% endif %}>11–14 Years</option>
+    <option value="15-17" {% if request.GET.age_group == '15-17' %}selected{% endif %}>15–17 Years</option>
+    <option value="18-19" {% if request.GET.age_group == '18-19' %}selected{% endif %}>18–19 Years</option>
+    <option value="20-24" {% if request.GET.age_group == '20-24' %}selected{% endif %}>20–24 Years</option>
+    <option value="25-29" {% if request.GET.age_group == '25-29' %}selected{% endif %}>25–29 Years</option>
+    <option value="30-34" {% if request.GET.age_group == '30-34' %}selected{% endif %}>30–34 Years</option>
+    <option value="35-39" {% if request.GET.age_group == '35-39' %}selected{% endif %}>35–39 Years</option>
+  </select>
+
+  <button type="submit" style="padding: 8px 20px; background: black; color: white; border-radius: 6px;">Filter</button>
+</form>
+
+<!-- Product Grid -->
+<div style="display: flex; flex-wrap: wrap; justify-content: center; gap: 30px; padding: 20px;">
+  {% for product in products %}
+  <div style="width: 260px; background: #fff; border-radius: 16px; overflow: hidden; box-shadow: 0 4px 14px rgba(0,0,0,0.08); text-align: center;">
+    <img src="{{ product.image.url }}" alt="{{ product.product_name }}" style="width: 100%; height: 240px; object-fit: cover;">
+    <div style="padding: 16px;">
+      <h4 style="font-size: 18px;">{{ product.product_name }}</h4>
+      <p style="color: #888; font-weight: 500;">Rs. {{ product.price|intcomma }}</p>
+      <div style="margin: 10px 0;">
+        <a href="{% url 'add_to_cart' product.id %}" title="Add to Cart" style="color: #000; font-size: 18px; margin: 0 8px;"><i class="fas fa-shopping-cart"></i></a>
+        <a href="{% url 'add_to_wishlist' product.id %}" title="Add to Wishlist" style="color: #e91e63; font-size: 18px; margin: 0 8px;"><i class="fas fa-heart"></i></a>
+      </div>
+      <a href="{% url 'vendor_product_details' product.id %}" style="padding: 6px 14px; background: #3c1361; color: white; border-radius: 8px; font-size: 14px; text-decoration: none;">View Details</a>
+      <button style="padding: 6px 14px; background: black; color: white; border-radius: 8px; margin-left: 8px; font-size: 14px;"
+              onclick="openBuyNowModal('{{ product.id }}', '{{ product.product_name }}', '{{ product.price }}')">Buy Now</button>
+    </div>
+  </div>
+  {% empty %}
+  <p style="text-align:center; font-weight: 500;">No products available.</p>
+  {% endfor %}
+</div>
+
+<!-- Buy Now Modal -->
+<div class="modal fade" id="buyNowModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content p-4" style="border-radius: 16px;">
+      <div class="modal-header border-0">
+        <h5 class="modal-title fw-bold">🛍️ Buy Now</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <form method="POST" action="{% url 'buy_now_checkout' %}">
+        {% csrf_token %}
+        <input type="hidden" name="product_id" id="modalProductId">
+        <input type="hidden" id="modalBasePrice">
+        <div class="modal-body">
+          <p><strong id="modalProductName"></strong> - Rs. <span id="modalProductPrice"></span></p>
+          <input type="number" name="quantity" id="modalQuantity" class="form-control mb-2" min="1" value="1" placeholder="Quantity" required>
+          <select name="size" class="form-control mb-2" required>
+            <option value="">Select Size</option>
+            <option>S</option><option>M</option><option>L</option><option>XL</option><option>Free</option>
+          </select>
+          <input type="text" name="name" class="form-control mb-2" placeholder="Full Name" required>
+          <input type="tel" name="phone" class="form-control mb-2" placeholder="Phone" required>
+          <textarea name="address" class="form-control mb-2" placeholder="Address" required></textarea>
+          <label><strong>Payment Method:</strong></label><br>
+          <input type="radio" name="payment_method" value="COD" checked> COD
+          <input type="radio" name="payment_method" value="eSewa" style="margin-left: 10px;"> eSewa
+          <p class="fw-bold mt-2">Total: Rs. <span id="modalTotalAmount"></span></p>
+        </div>
+        <div class="modal-footer border-0">
+          <button type="submit" class="btn btn-success w-100 fw-bold">Place Order</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- JavaScript -->
+<script>
+  function formatPrice(num) {
+    return parseFloat(num).toLocaleString("en-IN", {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2
+    });
+  }
+
+  function openBuyNowModal(id, name, price) {
+    document.getElementById('modalProductId').value = id;
+    document.getElementById('modalProductName').textContent = name;
+    document.getElementById('modalProductPrice').textContent = formatPrice(price);
+    document.getElementById('modalBasePrice').value = price;
+    document.getElementById('modalTotalAmount').textContent = formatPrice(price);
+
+    document.getElementById('modalQuantity').addEventListener('input', () => {
+      const qty = parseInt(document.getElementById('modalQuantity').value) || 1;
+      document.getElementById('modalTotalAmount').textContent = formatPrice(qty * price);
+    });
+
+    new bootstrap.Modal(document.getElementById('buyNowModal')).show();
+  }
+</script>
+{% endblock %}

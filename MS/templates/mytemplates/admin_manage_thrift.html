@@ -1,0 +1,67 @@
+{% extends 'mytemplates/admin_dashboard.html' %}
+{% load static %}
+
+{% block content %}
+<link rel="stylesheet" href="{% static 'css/admin_dashboard.css' %}">
+
+<section class="dashboard-section">
+  <h2 class="section-title">🧺 Thrift Approval Panel</h2>
+
+  <div class="table-container">
+    <table class="product-table">
+      <thead>
+        <tr>
+          <th>Image</th>
+          <th>Product</th>
+          <th>Seller</th>
+          <th>Price</th>
+          <th>Condition</th>
+          <th>Status</th>
+          <th>Sold</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for thrift in thrift_items %}
+        <tr>
+          <td>
+            {% if thrift.product.image %}
+              <img src="{{ thrift.product.image.url }}" alt="Product Image" height="60">
+            {% else %}
+              <span>No Image</span>
+            {% endif %}
+          </td>
+          <td>{{ thrift.product.product_name }}</td>
+          <td>{{ thrift.user.username }}</td>
+          <td>Rs. {{ thrift.product.price }}</td>
+          <td>{{ thrift.get_condition_rating_display }}</td>
+
+          <td>
+            <span class="badge badge-{{ thrift.approval_status }}">
+              {{ thrift.approval_status|title }}
+            </span>
+          </td>
+
+          <td>
+            <a href="{% url 'mark_thrift_sold' thrift.id %}" class="btn-sold-toggle">
+              {% if thrift.is_sold %}✅{% else %}❌{% endif %}
+            </a>
+          </td>
+
+          <td>
+            {% if thrift.approval_status == 'pending' %}
+              <a href="{% url 'approve_thrift' thrift.id %}" class="btn-approve">Approve</a>
+              <a href="{% url 'reject_thrift' thrift.id %}" class="btn-reject">Reject</a>
+            {% else %}
+              <span class="text-muted">Reviewed</span>
+            {% endif %}
+          </td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="8">No thrift items found.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</section>
+{% endblock %}

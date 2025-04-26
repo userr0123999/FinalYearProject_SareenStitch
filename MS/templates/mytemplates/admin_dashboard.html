@@ -1,0 +1,128 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Admin Dashboard</title>
+  <link rel="stylesheet" href="{% static 'css/admin_dashboard.css' %}">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+<div class="admin-container">
+  <!-- Sidebar -->
+  <div class="sidebar">
+    <div class="logo">
+      <img src="{% static 'images/finallogo.png' %}" alt="Logo">
+    </div>
+    <ul class="nav">
+        <li><a href="{% url 'admin_dashboard' %}"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
+        <li><a href="{% url 'admin_users' %}"><i class="fas fa-users"></i> Users</a></li>
+        <li><a href="{% url 'admin_products' %}"><i class="fas fa-box"></i> Products</a></li>
+        <li><a href="{% url 'admin_all_orders' %}"><i class="fas fa-shopping-cart"></i> Orders</a></li>
+        <li><a href="{% url 'admin_bidding' %}"><i class="fas fa-gavel"></i> Bidding</a></li>
+        <li><a href="{% url 'admin_thrift' %}"><i class="fas fa-recycle"></i> Thrift</a></li>
+        <li><a href="{% url 'admin_messages' %}"><i class="fas fa-envelope"></i> Messages</a></li>
+        <li><a href="{% url 'logout' %}"><i class="fas fa-power-off"></i> Logout</a></li>
+
+    </ul>
+  </div>
+
+  <!-- Main -->
+  <div class="main">
+    <div class="topbar">
+      <p>Hello, <strong>{{ request.user.username }}</strong></p>
+      <i class="fas fa-user-circle"></i>
+    </div>
+
+    {% if request.resolver_match.url_name == "admin_dashboard" %}
+      <h1>Admin Dashboard</h1>
+
+      <div class="cards">
+        <div class="card">
+          <p>{{ total_users }}</p>
+          <span>Total Users</span>
+          <i class="fas fa-user"></i>
+        </div>
+        <div class="card">
+          <p>{{ total_products }}</p>
+          <span>Total Products</span>
+          <i class="fas fa-box"></i>
+        </div>
+        <div class="card">
+          <p>{{ total_orders }}</p>
+          <span>Total Orders</span>
+          <i class="fas fa-check-square"></i>
+        </div>
+      </div>
+
+      <!-- Analytics -->
+      <h2 style="margin-top: 50px;">Analytics</h2>
+      <div class="charts-row">
+        <div class="chart-card">
+          <canvas id="userRolesChart"></canvas>
+          <p class="chart-caption">User Comparison: Admin vs Customer</p>
+        </div>
+        <div class="chart-card">
+          <canvas id="productCategoryChart"></canvas>
+          <p class="chart-caption">Product Distribution by Category</p>
+        </div>
+        <div class="chart-card">
+          <canvas id="orderStatusChart"></canvas>
+          <p class="chart-caption">Order Status Overview</p>
+        </div>
+      </div>
+    {% endif %}
+
+    {% block content %}{% endblock %}
+  </div>
+</div>
+
+<!-- Charts JS -->
+{% if request.resolver_match.url_name == "admin_dashboard" %}
+<script>
+  new Chart(document.getElementById('userRolesChart'), {
+    type: 'pie',
+    data: {
+      labels: ['Admin', 'Customer'],
+      datasets: [{
+        label: 'User Roles',
+        data: [{{ user_counts.admin }}, {{ user_counts.customer }}],
+        backgroundColor: ['#007bff', '#28a745']
+      }]
+    }
+  });
+
+  new Chart(document.getElementById('orderStatusChart'), {
+    type: 'bar',
+    data: {
+      labels: [{% for o in order_status_counts %}'{{ o.status|title }}'{% if not forloop.last %}, {% endif %}{% endfor %}],
+      datasets: [{
+        label: 'Order Status',
+        data: [{% for o in order_status_counts %}{{ o.count }}{% if not forloop.last %}, {% endif %}{% endfor %}],
+        backgroundColor: ['#4a90e2', '#ff6f61', '#20c997', '#ffc107', '#6f42c1']
+      }]
+    },
+    options: {
+      responsive: true,
+      scales: {
+        y: { beginAtZero: true }
+      }
+    }
+  });
+
+  new Chart(document.getElementById('productCategoryChart'), {
+    type: 'doughnut',
+    data: {
+      labels: [{% for c in category_counts %}'{{ c.category|title }}'{% if not forloop.last %}, {% endif %}{% endfor %}],
+      datasets: [{
+        label: 'Product Categories',
+        data: [{% for c in category_counts %}{{ c.count }}{% if not forloop.last %}, {% endif %}{% endfor %}],
+        backgroundColor: ['#4a90e2', '#ff6f61', '#20c997', '#ffc107', '#6f42c1']
+      }]
+    }
+  });
+</script>
+{% endif %}
+</body>
+</html>

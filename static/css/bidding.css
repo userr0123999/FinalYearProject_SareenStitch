@@ -1,0 +1,153 @@
+/* General Styles */
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    background-color: #ffffff;
+}
+
+/* Header */
+/*header {*/
+/*    display: flex;*/
+/*    justify-content: space-between;*/
+/*    align-items: center;*/
+/*    padding: 15px 40px;*/
+/*    background: #d35400;*/
+/*    color: white;*/
+/*}*/
+
+/*.logo {*/
+/*    font-size: 24px;*/
+/*    font-weight: bold;*/
+/*}*/
+
+/*nav a {*/
+/*    color: white;*/
+/*    text-decoration: none;*/
+/*    margin: 0 15px;*/
+/*    font-weight: bold;*/
+/*}*/
+
+/*.search-cart {*/
+/*    display: flex;*/
+/*    gap: 10px;*/
+/*}*/
+
+/*.search-cart input {*/
+/*    padding: 5px;*/
+/*    border-radius: 5px;*/
+/*    border: none;*/
+/*}*/
+
+/*.cart-btn {*/
+/*    background: white;*/
+/*    border: none;*/
+/*    padding: 5px 10px;*/
+/*    cursor: pointer;*/
+/*    font-weight: bold;*/
+/*}*/
+
+/* Bidding Info */
+.bidding-info {
+    text-align: center;
+    padding: 30px;
+    background: white;
+    margin: 20px auto;
+    width: 90%;
+    max-width: 800px;
+    border-radius: 10px;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.bidding-info ul {
+    list-style: none;
+    padding: 0;
+}
+
+.bidding-info ul li {
+    padding: 5px 0;
+}
+
+/* Bidding Products */
+.bidding-products {
+    width: 90%;
+    max-width: 1200px;
+    margin: 20px auto;
+    text-align: center;
+}
+
+h3 {
+    color: #ffffff;
+    font-size: 24px;
+    margin-bottom: 20px;
+}
+
+/* Product Grid */
+.product-container {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+
+/* Product Card */
+.product-box {
+    border: 1px solid #ffffff;
+    border-radius: 10px;
+    padding: 15px;
+    background: #fff;
+    width: 260px;
+    text-align: center;
+    transition: 0.3s ease-in-out;
+}
+
+.product-box:hover {
+    transform: scale(1.05);
+    box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.2);
+}
+
+/* Product Image */
+.product-box img {
+    width: 100%;
+    border-radius: 10px;
+    height: 300px;
+    object-fit: cover;
+}
+
+/* Strike-through Price */
+.strike {
+    text-decoration: line-through;
+    color: #888;
+}
+
+/* Countdown Timer */
+.countdown {
+    font-weight: bold;
+    color: red;
+}
+
+/* Bid Button */
+.bid-btn {
+    background: #000000;
+    color: white;
+    padding: 10px 15px;
+    border: none;
+    cursor: pointer;
+    font-size: 16px;
+    border-radius: 5px;
+    margin-top: 10px;
+}
+
+.bid-btn:hover {
+    background: #b92b70;
+}
+
+/*!* Footer *!*/
+/*footer {*/
+/*    text-align: center;*/
+/*    padding: 20px;*/
+/*    background: #d35400;*/
+/*    color: white;*/
+/*    margin-top: 20px;*/
+/*}*/
