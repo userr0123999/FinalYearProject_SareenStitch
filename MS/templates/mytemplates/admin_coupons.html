@@ -1,0 +1,54 @@
+{% extends 'mytemplates/admin_dashboard.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container mt-5">
+  <h2 class="text-center mb-4">Manage Coupons</h2>
+
+  <div class="text-end mb-3">
+    <a href="{% url 'add_coupon' %}" class="btn btn-success fw-bold">➕ Add Coupon</a>
+  </div>
+
+  {% if coupons %}
+  <div class="table-responsive">
+    <table class="table table-striped table-bordered align-middle shadow-sm rounded-4">
+      <thead class="table-dark">
+        <tr>
+          <th>Coupon Code</th>
+          <th>Discount (%)</th>
+          <th>Expiry Date</th>
+          <th>Status</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for coupon in coupons %}
+        <tr>
+          <td>{{ coupon.coupon_code }}</td>
+          <td>{{ coupon.discount_percentage }}%</td>
+          <td>{{ coupon.expiry_date|date:"Y-m-d H:i" }}</td>
+          <td>
+              {% if coupon.is_used %}
+                <span class="badge bg-danger">Used</span>
+              {% elif coupon.expiry_date < now %}
+                <span class="badge bg-secondary">Expired</span>
+              {% else %}
+                <span class="badge bg-success">Active</span>
+              {% endif %}
+          </td>
+
+          <td>
+            <a href="{% url 'edit_coupon' coupon.coupon_id %}" class="btn btn-warning btn-sm">Edit</a>
+            <a href="{% url 'delete_coupon' coupon.coupon_id %}" class="btn btn-danger btn-sm"
+               onclick="return confirm('Are you sure you want to delete this coupon?');">Delete</a>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+    <div class="alert alert-info text-center">No coupons available.</div>
+  {% endif %}
+</div>
+{% endblock %}
