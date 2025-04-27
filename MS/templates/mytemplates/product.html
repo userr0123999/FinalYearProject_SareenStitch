@@ -48,13 +48,14 @@
   {% endfor %}
 </div>
 
-<!-- 🛒 Buy Now Modal -->
-<div class="modal fade" id="buyNowModal" tabindex="-1" aria-hidden="true">
+
+<!-- ✅ Buy Now Modal -->
+<div class="modal fade" id="buyNowModal" tabindex="-1">
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content p-4 shadow rounded-4">
       <div class="modal-header border-0">
         <h5 class="modal-title fw-bold">🛍️ Buy Now</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
       </div>
       <form method="POST" action="{% url 'buy_now_checkout' %}">
         {% csrf_token %}
@@ -63,53 +64,192 @@
         <div class="modal-body">
           <p><strong id="modalProductName"></strong> - Rs. <span id="modalProductPrice"></span></p>
 
-          <input type="number" name="quantity" id="modalQuantity" min="1" value="1" class="form-control mb-2" placeholder="Quantity" required>
+          <label>Quantity:</label>
+          <input type="number" class="form-control mb-2" name="quantity" id="modalQuantity" min="1" value="1" required>
+
+          <label>Size:</label>
           <select name="size" class="form-control mb-2" required>
-            <option value="">Select Size</option>
-            <option>S</option><option>M</option><option>L</option><option>XL</option>
+            <option value="XS">XS</option><option value="S">S</option><option value="M">M</option>
+            <option value="L">L</option><option value="XL">XL</option>
           </select>
-          <input type="text" name="name" placeholder="Full Name" class="form-control mb-2" required>
-          <input type="tel" name="phone" placeholder="Phone" class="form-control mb-2" required>
-          <textarea name="address" placeholder="Address" class="form-control mb-2" required></textarea>
 
-          <label><strong>Payment Method:</strong></label><br>
-          <input type="radio" name="payment_method" value="COD" checked> COD
-          <input type="radio" name="payment_method" value="eSewa" style="margin-left: 10px;"> eSewa
+          <label>Full Name:</label>
+          <input type="text" class="form-control mb-2" name="name" required>
 
-          <p class="fw-bold mt-2">Total: Rs. <span id="modalTotalAmount"></span></p>
+          <label>Phone:</label>
+          <input type="tel" class="form-control mb-2" name="phone" required>
+
+          <label>Address:</label>
+          <textarea class="form-control mb-2" name="address" required></textarea>
+
+          <label>Payment Method:</label><br>
+          <div class="form-check form-check-inline">
+            <input class="form-check-input" type="radio" name="payment_method" value="COD" checked>
+            <label class="form-check-label">Cash on delivery</label>
+          </div>
+          <div class="form-check form-check-inline">
+            <input class="form-check-input" type="radio" name="payment_method" value="eSewa">
+            <label class="form-check-label">eSewa</label>
+          </div>
+
+          <p class="fw-bold text-success mt-3">Total: Rs. <span id="modalTotalAmount"></span></p>
         </div>
         <div class="modal-footer border-0">
-          <button type="submit" class="btn btn-success w-100 fw-bold">Place Order</button>
+          <button type="button" class="btn btn-success w-100 fw-bold" onclick="showConfirmation()">🛒 Place Order</button>
         </div>
       </form>
     </div>
   </div>
 </div>
 
-<!-- JS: Dynamic Buy Now Modal Logic -->
+<!-- ✅ Confirm Modal -->
+<div class="modal fade" id="confirmOrderModal" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered" style="max-width: 400px;">
+    <div class="modal-content p-4 shadow rounded-4">
+      <div class="modal-header border-0 pb-0">
+        <h5 class="modal-title">Confirm Order</h5>
+      </div>
+      <div class="modal-body text-center pt-1">
+        <p>Are you sure you want to place this order?</p>
+        <div class="d-flex justify-content-center gap-3">
+          <button class="btn btn-outline-secondary px-4" data-bs-dismiss="modal">Cancel</button>
+          <button class="btn btn-success px-4" onclick="finalizeOrder()">Yes, Place Order</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+
+<style>
+/* ✅ Modal Outer Content */
+.buy-now-content {
+  border-radius: 16px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+}
+
+/* ✅ Modal Header */
+.modal-header {
+  background: linear-gradient(135deg, #800020, #2a4365); /* Saree & Stitch vibe */
+  color: white;
+  border-top-left-radius: 16px;
+  border-top-right-radius: 16px;
+  padding: 15px 20px;
+}
+
+/* ✅ Modal Body */
+.modal-body {
+  padding: 30px;
+  background-color: #f9f9f9;
+}
+
+/* ✅ Product Name Styling */
+.product-name {
+  font-weight: bold;
+  font-size: 18px;
+  text-align: center;
+  margin-bottom: 20px;
+  color: #2a4365;
+}
+
+/* ✅ Form Inputs */
+.form-group {
+  margin-bottom: 15px;
+}
+
+.form-control {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  font-size: 16px;
+}
+
+/* ✅ Payment Method */
+.payment-method {
+  margin-top: 20px;
+  font-weight: 600;
+  font-size: 16px;
+  color: #1d3557;
+}
+
+/* ✅ Total Amount Text */
+.total-amount {
+  margin-top: 20px;
+  font-size: 18px;
+  font-weight: bold;
+  color: #1d3557;
+  text-align: center;
+}
+
+/* ✅ Button Row */
+.button-row {
+  text-align: center;
+  margin-top: 25px;
+}
+
+/* ✅ Place Order Button */
+.place-order-btn {
+  background: linear-gradient(135deg, #2a4365, #800020);
+  color: white;
+  padding: 12px 30px;
+  font-size: 18px;
+  font-weight: bold;
+  border: none;
+  border-radius: 10px;
+  transition: all 0.3s ease;
+}
+
+.place-order-btn:hover {
+  background: linear-gradient(135deg, #800020, #2a4365);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+}
+
+/* ✅ Close Button Style */
+.btn-close {
+  font-size: 22px;
+  color: white;
+}
+</style>
 <script>
-  function formatPrice(num) {
-    return parseFloat(num).toLocaleString("en-IN", {
-      minimumFractionDigits: 2,
-      maximumFractionDigits: 2
-    });
-  }
+    let buyNowForm = null;
+    let basePrice = 0;
 
-  let basePrice = 0;
+    function formatPrice(num) {
+      return parseFloat(num).toLocaleString("en-IN", {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+      });
+    }
 
-  function openBuyNowModal(id, name, price) {
-    document.getElementById('modalProductId').value = id;
-    document.getElementById('modalProductName').textContent = name;
-    document.getElementById('modalProductPrice').textContent = price;
-    document.getElementById('modalBasePrice').value = price;
-    document.getElementById('modalTotalAmount').textContent = price;
+    function openBuyNowModal(productId, name, price) {
+      const modal = new bootstrap.Modal(document.getElementById('buyNowModal'));
+      document.getElementById('modalProductId').value = productId;
+      document.getElementById('modalProductName').textContent = name;
+      document.getElementById('modalBasePrice').value = price;
+      document.getElementById('modalQuantity').value = 1;
+      basePrice = parseFloat(price);
+      document.getElementById('modalProductPrice').textContent = formatPrice(basePrice);
+      document.getElementById('modalTotalAmount').textContent = formatPrice(basePrice);
+      modal.show();
+    }
 
-    document.getElementById('modalQuantity').addEventListener('input', () => {
-      const qty = parseInt(document.getElementById('modalQuantity').value) || 1;
-      document.getElementById('modalTotalAmount').textContent = formatPrice(qty * price);
-    });
+    function showConfirmation() {
+      buyNowForm = document.querySelector("#buyNowModal form");
+      new bootstrap.Modal(document.getElementById('confirmOrderModal')).show();
+    }
 
-    new bootstrap.Modal(document.getElementById('buyNowModal')).show();
-  }
+    function finalizeOrder() {
+      bootstrap.Modal.getInstance(document.getElementById('confirmOrderModal')).hide();
+      bootstrap.Modal.getInstance(document.getElementById('buyNowModal')).hide();
+      setTimeout(() => {
+        buyNowForm.submit();
+      }, 500);
+    }
 </script>
+
+
 {% endblock %}

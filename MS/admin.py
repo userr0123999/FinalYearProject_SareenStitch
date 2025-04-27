@@ -28,14 +28,8 @@ admin.site.register(Bid)
 admin.site.register(Order)
 admin.site.register(Rating)
 admin.site.register(Chat)
-# admin.site.register(Coupon)
+admin.site.register(Coupon)
 admin.site.register(ThriftProduct)
 
 admin.site.register(Size)
 admin.site.register(AgeGroup)
-
-@admin.register(Coupon)
-class CouponAdmin(admin.ModelAdmin):
-    list_display = ('coupon_code', 'user', 'discount_percentage', 'expiry_date', 'is_used')
-    list_filter = ('is_used', 'expiry_date')
-    search_fields = ('coupon_code', 'user')

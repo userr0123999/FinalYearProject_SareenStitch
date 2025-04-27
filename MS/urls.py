@@ -125,4 +125,26 @@ path('notifications/delete/<int:note_id>/', views.delete_notification, name='del
 path('notifications/mark-all-read/', views.mark_all_notifications_read, name='mark_all_notifications_read'),
 path('notifications/mark-read/', views.mark_notifications_read, name='mark_notifications_read'),
 
-]
+
+
+path('apply-coupon/', views.apply_coupon, name='apply_coupon'),
+path('dashboard/coupons/', views.admin_coupons, name='admin_coupons'),
+path('dashboard/coupons/add/', views.add_coupon, name='add_coupon'),
+path('dashboard/coupons/edit/<int:coupon_id>/', views.edit_coupon, name='edit_coupon'),
+path('dashboard/coupons/delete/<int:coupon_id>/', views.delete_coupon, name='delete_coupon'),
+
+
+path('dashboard/payment-report/', views.admin_payment_report, name='admin_payment_report'),
+path('dashboard/payment-report/export/', views.export_admin_payment_report, name='export_admin_payment_report'),
+
+
+
+
+
+
+
+
+
+
+
+    ]

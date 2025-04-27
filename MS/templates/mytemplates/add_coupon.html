@@ -1,0 +1,31 @@
+{% extends 'mytemplates/admin_dashboard.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container mt-5" style="max-width: 600px;">
+  <h2 class="text-center mb-4">Add New Coupon</h2>
+
+  <form method="POST" class="border p-4 rounded shadow-sm">
+    {% csrf_token %}
+
+    <div class="mb-3">
+      <label class="form-label fw-semibold">Coupon Code</label>
+      <input type="text" name="coupon_code" class="form-control" required>
+    </div>
+
+    <div class="mb-3">
+      <label class="form-label fw-semibold">Discount Percentage</label>
+      <input type="number" step="0.01" name="discount_percentage" class="form-control" required>
+    </div>
+
+    <div class="mb-3">
+      <label class="form-label fw-semibold">Expiry Date</label>
+      <input type="datetime-local" name="expiry_date" class="form-control" required>
+    </div>
+
+    <div class="text-center">
+      <button type="submit" class="btn btn-success w-100 fw-bold rounded-pill">Save Coupon</button>
+    </div>
+  </form>
+</div>
+{% endblock %}

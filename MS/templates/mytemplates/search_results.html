@@ -1,34 +1,94 @@
 {% extends 'mytemplates/index.html' %}
 {% load static %}
+{% load humanize %}
 {% block content %}
 <h2 style="text-align:center; font-size: 28px; margin: 40px 0;">🔍 Search Results for "{{ query }}"</h2>
 
 <div style="display: flex; flex-wrap: wrap; gap: 30px; justify-content: center; padding: 0 20px;">
+
+  <!-- Admin Products -->
   {% for product in products %}
   <div style="width: 260px; background: #fff; border-radius: 16px; overflow: hidden; box-shadow: 0 4px 14px rgba(0,0,0,0.1); text-align: center;">
     <img src="{{ product.image.url }}" alt="{{ product.product_name }}" style="width: 100%; height: 240px; object-fit: cover;">
     <div style="padding: 16px;">
       <h4 style="font-size: 18px;">{{ product.product_name }}</h4>
-      <p style="color: #888; font-weight: 500;">Rs. {{ product.price }}</p>
+      <p style="color: #888; font-weight: 500;">Rs. {{ product.price|intcomma }}</p>
+
       <div style="margin: 10px 0;">
-        <a href="{% url 'add_to_cart' product.id %}" title="Add to Cart" style="color: #000; font-size: 18px; margin: 0 10px;"><i class="fas fa-shopping-cart"></i></a>
-        <a href="{% url 'add_to_wishlist' product.id %}" title="Add to Wishlist" style="color: #e91e63; font-size: 18px; margin: 0 10px;"><i class="fas fa-heart"></i></a>
+        <a href="{% url 'add_to_cart' product.id %}" style="color: #000; font-size: 18px; margin: 0 8px;"><i class="fas fa-shopping-cart"></i></a>
+        <a href="{% url 'add_to_wishlist' product.id %}" style="color: #e91e63; font-size: 18px; margin: 0 8px;"><i class="fas fa-heart"></i></a>
       </div>
+
       <div style="margin-top: 10px;">
-        <a href="{% url 'product_detail' product.id %}" style="padding: 6px 14px; background: #3c1361; color: white; border-radius: 8px; font-size: 14px; text-decoration: none;">View Details</a>
-        <button style="padding: 6px 14px; background: black; color: white; border-radius: 8px; font-size: 14px; margin-left: 10px;"
+        <a href="{% url 'product_detail' product.id %}" class="btn btn-primary btn-sm" style="background:#3c1361; border:none; border-radius:8px;">View Details</a>
+        <button class="btn btn-dark btn-sm" style="margin-left: 8px; border-radius:8px;"
                 onclick="openBuyNowModal('{{ product.id }}', '{{ product.product_name }}', '{{ product.price }}')">
           Buy Now
         </button>
       </div>
     </div>
   </div>
-  {% empty %}
-    <p style="text-align:center; font-size: 18px; color: gray;">No products match your search.</p>
   {% endfor %}
+
+<!-- Vendors -->
+{% for vendor in vendors %}
+<div style="width: 260px; background: #fff; border-radius: 16px; overflow: hidden; box-shadow: 0 4px 14px rgba(0,0,0,0.1); text-align: center;">
+
+  {% if vendor.logo %}
+    <img src="{{ vendor.logo.url }}" alt="{{ vendor.store_name }}" style="width: 100%; height: 240px; object-fit: cover;">
+  {% else %}
+    <img src="{% static 'images/default_vendor.png' %}" alt="{{ vendor.store_name }}" style="width: 100%; height: 240px; object-fit: cover;">
+  {% endif %}
+
+  <div style="padding: 16px;">
+    <h4 style="font-size: 18px;">{{ vendor.store_name }}</h4>
+    <p style="color: #888; font-weight: 500;">Vendor Store</p>
+
+    <div style="margin-top: 10px;">
+      <a href="{% url 'vendor_store' vendor.id %}" class="btn btn-outline-primary btn-sm" style="border-radius:8px;">View Store</a>
+    </div>
+  </div>
+</div>
+{% endfor %}
+
+
+  <!-- Bidding Products -->
+  {% for bid in bidding_products %}
+  <div style="width: 260px; background: #fff; border-radius: 16px; overflow: hidden; box-shadow: 0 4px 14px rgba(0,0,0,0.1); text-align: center;">
+    <img src="{{ bid.image.url }}" alt="{{ bid.product_name }}" style="width: 100%; height: 240px; object-fit: cover;">
+    <div style="padding: 16px;">
+      <h4 style="font-size: 18px;">{{ bid.product_name }}</h4>
+      <p style="color: #888; font-weight: 500;">Starting at Rs. {{ bid.start_price|intcomma }}</p>
+
+      <div style="margin-top: 10px;">
+        <a href="{% url 'bidding_detail' bid.id %}" class="btn btn-outline-success btn-sm" style="border-radius:8px;">View Bidding</a>
+      </div>
+    </div>
+  </div>
+  {% endfor %}
+
+  <!-- Thrift Products -->
+  {% for thrift in thrift_products %}
+  <div style="width: 260px; background: #fff; border-radius: 16px; overflow: hidden; box-shadow: 0 4px 14px rgba(0,0,0,0.1); text-align: center;">
+    <img src="{{ thrift.image.url }}" alt="{{ thrift.product_name }}" style="width: 100%; height: 240px; object-fit: cover;">
+    <div style="padding: 16px;">
+      <h4 style="font-size: 18px;">{{ thrift.product_name }}</h4>
+      <p style="color: #888; font-weight: 500;">Rs. {{ thrift.price|intcomma }}</p>
+
+      <div style="margin-top: 10px;">
+        <a href="{% url 'thrift_detail' thrift.id %}" class="btn btn-outline-warning btn-sm" style="border-radius:8px;">View Thrift</a>
+      </div>
+    </div>
+  </div>
+  {% endfor %}
+
+  {% if not products and not vendors and not bidding_products and not thrift_products %}
+    <p style="text-align:center; font-size: 18px; color: gray;">No matching results found.</p>
+  {% endif %}
+
 </div>
 
-<!-- 🛒 Buy Now Modal -->
+<!-- ✅ Buy Now Modal (for admin products only) -->
 <div class="modal fade" id="buyNowModal" tabindex="-1" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content p-4" style="border-radius: 16px;">
@@ -42,17 +102,19 @@
         <input type="hidden" id="modalBasePrice">
         <div class="modal-body">
           <p><strong id="modalProductName"></strong> - Rs. <span id="modalProductPrice"></span></p>
-          <input type="number" name="quantity" id="modalQuantity" class="form-control mb-2" min="1" value="1" placeholder="Quantity" required>
+          <input type="number" name="quantity" id="modalQuantity" class="form-control mb-2" min="1" placeholder="Quantity" required>
           <select name="size" class="form-control mb-2" required>
             <option value="">Select Size</option>
-            <option>S</option><option>M</option><option>L</option><option>XL</option><option>Free</option>
+            <option>XS</option><option>S</option><option>M</option><option>L</option><option>XL</option><option>Free Size</option>
           </select>
           <input type="text" name="name" class="form-control mb-2" placeholder="Full Name" required>
           <input type="tel" name="phone" class="form-control mb-2" placeholder="Phone" required>
           <textarea name="address" class="form-control mb-2" placeholder="Address" required></textarea>
+
           <label><strong>Payment Method:</strong></label><br>
           <input type="radio" name="payment_method" value="COD" checked> COD
           <input type="radio" name="payment_method" value="eSewa" style="margin-left: 10px;"> eSewa
+
           <p class="fw-bold mt-2">Total: Rs. <span id="modalTotalAmount"></span></p>
         </div>
         <div class="modal-footer border-0">
@@ -86,4 +148,5 @@
     new bootstrap.Modal(document.getElementById('buyNowModal')).show();
   }
 </script>
+
 {% endblock %}

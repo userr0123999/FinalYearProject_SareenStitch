@@ -28,9 +28,22 @@ def aboutus(request):
 from django.db.models import Q
 from .models import Product
 
+from django.db.models import Q
+from django.contrib.auth.decorators import login_required
+from django.shortcuts import render
+from .models import Product, Vendor, ThriftProduct, BiddingProduct
+
+
+from django.db.models import Q
+from .models import Product, Vendor, BiddingProduct, ThriftProduct
+
 def search_products(request):
     query = request.GET.get('q')
     products = Product.objects.filter(user__is_superuser=True)  # Only admin products
+
+    vendors = Vendor.objects.all()
+    bidding_products = BiddingProduct.objects.all()
+    thrift_products = ThriftProduct.objects.all()
 
     if query:
         products = products.filter(
@@ -39,7 +52,30 @@ def search_products(request):
             Q(category__icontains=query)
         )
 
-    return render(request, 'mytemplates/search_results.html', {'products': products, 'query': query})
+        vendors = vendors.filter(
+            Q(store_name__icontains=query) |
+            Q(store_description__icontains=query)
+        )
+
+        bidding_products = bidding_products.filter(
+            Q(product_name__icontains=query) |
+            Q(description__icontains=query)
+        )
+
+        thrift_products = thrift_products.filter(
+            Q(product__product_name__icontains=query) |  # ✅ Fix here
+            Q(product__description__icontains=query) |
+            Q(product__category__icontains=query)
+        )
+
+    return render(request, 'mytemplates/search_results.html', {
+        'products': products,
+        'vendors': vendors,
+        'bidding_products': bidding_products,
+        'thrift_products': thrift_products,
+        'query': query
+    })
+
 
 
 from django.contrib.auth.decorators import login_required
@@ -974,6 +1010,54 @@ def remove_wishlist_item(request, item_id):
 # ---------- ORDER ----------
 from django.contrib.auth.decorators import login_required
 
+# @login_required
+# def buy_now_checkout(request):
+#     if request.method == 'POST':
+#         try:
+#             product_id = request.POST.get('product_id')
+#             quantity = int(request.POST.get('quantity'))
+#             size = request.POST.get('size')
+#             name = request.POST.get('name')
+#             phone = request.POST.get('phone')
+#             address = request.POST.get('address')
+#             payment_method = request.POST.get('payment_method')
+#
+#             product = get_object_or_404(Product, id=product_id)
+#
+#             if quantity < 1:
+#                 messages.error(request, "Quantity must be at least 1.")
+#                 return redirect('product')
+#
+#             total_price = product.price * quantity
+#
+#             Order.objects.create(
+#                 user=request.user,              # ✅ FK to authenticated user
+#                 product=product,
+#                 quantity=quantity,
+#                 total_price=total_price,
+#                 status='pending',
+#             )
+#
+#             messages.success(request, "Order placed successfully!")
+#             return redirect('user_orders')
+#
+#         except Exception as e:
+#             messages.error(request, f"Something went wrong: {str(e)}")
+#             return redirect('product')
+#
+#     return redirect('product')
+
+from django.shortcuts import render, redirect
+from django.contrib import messages
+from .models import Product, Order  # import your models
+from django.contrib.auth.decorators import login_required
+
+# ---------- ORDER ----------
+from django.shortcuts import render, redirect, get_object_or_404
+from django.contrib import messages
+from django.contrib.auth.decorators import login_required
+from .models import Product, Order
+
 @login_required
 def buy_now_checkout(request):
     if request.method == 'POST':
@@ -986,14 +1070,28 @@ def buy_now_checkout(request):
             address = request.POST.get('address')
             payment_method = request.POST.get('payment_method')
 
+            # Limit quantity to 5
+            if quantity > 5:
+                messages.error(request, "You cannot order more than 5 units of a product.")
+                return redirect('product')
+
             product = get_object_or_404(Product, id=product_id)
 
             if quantity < 1:
                 messages.error(request, "Quantity must be at least 1.")
                 return redirect('product')
 
+            # Ensure there's enough stock
+            if product.quantity >= quantity:
+                product.quantity -= quantity  # Decrease the quantity
+                product.save()  # Save the updated product quantity
+            else:
+                messages.error(request, f"Not enough stock for {product.product_name}.")
+                return redirect('product')
+
             total_price = product.price * quantity
 
+            # Create the order
             Order.objects.create(
                 user=request.user,              # ✅ FK to authenticated user
                 product=product,
@@ -1010,8 +1108,6 @@ def buy_now_checkout(request):
             return redirect('product')
 
     return redirect('product')
-
-
 
 @login_required
 def user_orders(request):
@@ -1557,6 +1653,219 @@ def bidding_history(request):
 
 
 
+from django.http import JsonResponse
+from .models import Coupon
+from datetime import datetime
+from django.utils import timezone
+
+def apply_coupon(request):
+    if request.method == "POST":
+        import json
+        data = json.loads(request.body)
+        coupon_code = data.get('coupon_code')
+
+        try:
+            coupon = Coupon.objects.get(coupon_code__iexact=coupon_code, is_used=False)
+            if coupon.expiry_date < timezone.now():
+                return JsonResponse({'success': False, 'message': 'Coupon expired.'})
+
+            total_price = 0
+            cart_items = CartItem.objects.filter(user=request.user)
+            for item in cart_items:
+                total_price += item.product.price * item.quantity
+
+            discount_amount = total_price * (coupon.discount_percentage / 100)
+            new_total = total_price - discount_amount
+
+            return JsonResponse({
+                'success': True,
+                'discount': coupon.discount_percentage,
+                'new_total': round(new_total, 2)
+            })
+        except Coupon.DoesNotExist:
+            return JsonResponse({'success': False, 'message': 'Invalid or used coupon.'})
+
+    return JsonResponse({'success': False, 'message': 'Invalid request'})
+from .models import Coupon
 
 
 
+from .models import Coupon
+
+
+from django.utils import timezone
+
+@login_required
+def admin_coupons(request):
+    if not (request.user.is_superuser or request.user.is_staff):
+        return redirect('home')
+    coupons = Coupon.objects.all().order_by('-expiry_date')
+    now = timezone.now()
+    return render(request, 'mytemplates/admin_coupons.html', {'coupons': coupons, 'now': now})
+
+
+def add_coupon(request):
+    if request.method == 'POST':
+        coupon_code = request.POST.get('coupon_code')
+        discount_percentage = request.POST.get('discount_percentage')
+        expiry_date = request.POST.get('expiry_date')
+
+        # Check if coupon code already exists
+        if Coupon.objects.filter(coupon_code__iexact=coupon_code).exists():
+            messages.error(request, 'Coupon code already exists! Please use a different one.')
+            return redirect('add_coupon')
+
+        # Create new coupon
+        coupon = Coupon(
+            coupon_code=coupon_code,
+            discount_percentage=discount_percentage,
+            expiry_date=expiry_date
+        )
+        coupon.save()
+
+        messages.success(request, 'Coupon added successfully!')
+        return redirect('admin_coupons')
+
+    return render(request, 'mytemplates/add_coupon.html')
+
+def edit_coupon(request, coupon_id):
+    coupon = get_object_or_404(Coupon, coupon_id=coupon_id)
+    if request.method == 'POST':
+        coupon.coupon_code = request.POST['coupon_code']
+        coupon.discount_percentage = request.POST['discount_percentage']
+        coupon.expiry_date = request.POST['expiry_date']
+        coupon.save()
+        messages.success(request, 'Coupon updated successfully!')
+        return redirect('admin_coupons')
+
+    return render(request, 'mytemplates/edit_coupon.html', {'coupon': coupon})
+
+
+def delete_coupon(request, coupon_id):
+    coupon = get_object_or_404(Coupon, coupon_id=coupon_id)
+    coupon.delete()
+    messages.success(request, 'Coupon deleted successfully!')
+    return redirect('admin_coupons')
+
+from django.db.models import Sum
+from django.utils import timezone
+from django.http import HttpResponse
+import csv
+
+@login_required
+def admin_payment_report(request):
+    if not request.user.is_superuser:
+        return redirect('home')
+
+    orders = Order.objects.all()
+
+    # Filtering
+    selected_method = request.GET.get('method')
+    start_date = request.GET.get('start_date')
+    end_date = request.GET.get('end_date')
+
+    if selected_method:
+        orders = orders.filter(payment_method=selected_method)
+    if start_date:
+        orders = orders.filter(order_date__date__gte=start_date)
+    if end_date:
+        orders = orders.filter(order_date__date__lte=end_date)
+
+    esewa_total = orders.filter(payment_method='eSewa').aggregate(Sum('total_price'))['total_price__sum'] or 0
+    cod_total = orders.filter(payment_method='COD').aggregate(Sum('total_price'))['total_price__sum'] or 0
+    total_amount = esewa_total + cod_total
+
+    return render(request, 'mytemplates/admin_payment_report.html', {
+        'orders': orders,
+        'esewa_total': esewa_total,
+        'cod_total': cod_total,
+        'total_amount': total_amount,
+        'selected_method': selected_method,
+        'start_date': start_date,
+        'end_date': end_date,
+    })
+
+
+# @login_required
+# def export_admin_payment_report(request):
+#     if not request.user.is_superuser:
+#         return redirect('home')
+#
+#     orders = Order.objects.all()
+#
+#     # Apply same filtering here too
+#     selected_method = request.GET.get('method')
+#     start_date = request.GET.get('start_date')
+#     end_date = request.GET.get('end_date')
+#
+#     if selected_method:
+#         orders = orders.filter(payment_method=selected_method)
+#     if start_date:
+#         orders = orders.filter(order_date__date__gte=start_date)
+#     if end_date:
+#         orders = orders.filter(order_date__date__lte=end_date)
+#
+#     # Create CSV
+#     response = HttpResponse(content_type='text/csv')
+#     response['Content-Disposition'] = 'attachment; filename="admin_payment_report.csv"'
+#
+#     writer = csv.writer(response)
+#     writer.writerow(['Order ID', 'Product', 'Customer', 'Amount (Rs)', 'Payment Method', 'Status', 'Order Date'])
+#
+#     for order in orders:
+#         writer.writerow([
+#             order.id,
+#             order.product.product_name,
+#             order.user.username,
+#             order.total_price,
+#             order.payment_method,
+#             order.status,
+#             order.order_date.strftime('%Y-%m-%d'),
+#         ])
+#
+#     return response
+
+import csv
+from django.http import HttpResponse
+from django.contrib.auth.decorators import login_required
+from .models import Order
+
+@login_required
+def export_admin_payment_report(request):
+    if not request.user.is_superuser:
+        return redirect('home')
+
+    orders = Order.objects.all()
+
+    # Apply same filtering
+    selected_method = request.GET.get('method')
+    start_date = request.GET.get('start_date')
+    end_date = request.GET.get('end_date')
+
+    if selected_method:
+        orders = orders.filter(payment_method=selected_method)
+    if start_date:
+        orders = orders.filter(order_date__date__gte=start_date)
+    if end_date:
+        orders = orders.filter(order_date__date__lte=end_date)
+
+    # Create CSV
+    response = HttpResponse(content_type='text/csv')
+    response['Content-Disposition'] = 'attachment; filename="admin_payment_report.csv"'
+
+    writer = csv.writer(response)
+    writer.writerow(['SN', 'Product', 'Customer', 'Amount (Rs)', 'Payment Method', 'Status', 'Order Date'])
+
+    # Serial number counter
+    for idx, order in enumerate(orders, start=1):
+        writer.writerow([
+            idx,  # << ✅ Here serial number
+            order.product.product_name,
+            order.user.username,
+            order.total_price,
+            order.payment_method,
+            order.status,
+            order.order_date.strftime('%Y-%m-%d'),
+        ])
+
+    return response
