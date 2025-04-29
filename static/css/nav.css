@@ -126,7 +126,7 @@ nav i {
 .notification-dropdown a {
   position: relative;
   font-size: 18px;
-  color: #001f5b;
+  color: #007bff;
 }
 
 .notif-count {
@@ -219,7 +219,7 @@ nav i {
 }
 
 .notification-dropdown > a {
-  color: #001f5b;
+  color: #007bff;
   position: relative;
   font-size: 22px;
   text-decoration: none;

@@ -3,6 +3,18 @@
 {% load humanize %}
 
 {% block content %}
+{% if messages %}
+  <div id="toast-container">
+    {% for message in messages %}
+      <div class="toast-message" style="background-color: #f8d7da; color: #721c24; padding: 15px; margin-bottom: 10px; border-radius: 5px;">
+        {{ message }}
+      </div>
+    {% endfor %}
+  </div>
+{% endif %}
+
+
+
 <div style="max-width: 700px; margin: 40px auto; background: white; padding: 30px; border-radius: 16px; box-shadow: 0 8px 24px rgba(0,0,0,0.1); text-align: center;">
 
   <!-- Product Image -->
@@ -15,11 +27,27 @@
 
   <!-- Metadata -->
   <p style="margin-top: 8px; font-size: 14px; color: gray;">Category: {{ product.category }}</p>
-  <p style="font-size: 14px; color: gray;">Sizes:
-    {% for size in product.size.all %}
-      {{ size.label }}{% if not forloop.last %}, {% endif %}
-    {% endfor %}
-  </p>
+    <p style="font-size: 14px; color: gray;">Sizes:
+  {% for size in product.sizes.all %}
+    {{ size.name }}{% if not forloop.last %}, {% endif %}
+  {% empty %}
+    Not specified
+  {% endfor %}
+</p>
+
+{#<p style="font-size: 14px; color: gray;">Age Groups:#}
+{#  {% with agegroups=product.age_groups.all %}#}
+{#    {% if agegroups %}#}
+{#      {% for age_group in agegroups %}#}
+{#        {{ age_group.name }}{% if not forloop.last %}, {% endif %}#}
+{#      {% endfor %}#}
+{#    {% else %}#}
+{#      Not specified#}
+{#    {% endif %}#}
+{#  {% endwith %}#}
+{#</p>#}
+
+
   <p style="font-size: 14px; color: gray;">Stock: {{ product.quantity }}</p>
 
   <!-- Description -->
@@ -48,7 +76,7 @@
   </div>
 </div>
 
-<!-- ✅ Buy Now Modal -->
+<!-- ✅ Updated Buy Now Modal with Age Group + Theme Button -->
 <div class="modal fade" id="buyNowModal" tabindex="-1" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content p-4 shadow rounded-4">
@@ -56,37 +84,133 @@
         <h5 class="modal-title fw-bold">🛍️ Buy Now</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
+
       <form method="POST" action="{% url 'buy_now_checkout' %}">
         {% csrf_token %}
         <input type="hidden" name="product_id" id="modalProductId">
         <input type="hidden" id="modalBasePrice">
+
         <div class="modal-body">
-          <p><strong id="modalProductName"></strong> - Rs. <span id="modalProductPrice"></span></p>
+          <p class="fw-bold text-center mb-3" style="font-size: 18px;">
+            <span id="modalProductName"></span> <br>
+            <small class="text-muted">Rs. <span id="modalProductPrice"></span></small>
+          </p>
 
-          <input type="number" name="quantity" id="modalQuantity" min="1" value="1" class="form-control mb-2" required>
-          <select name="size" class="form-control mb-2" required>
-            <option value="">Select Size</option>
-            <option>XS</option><option>S</option><option>M</option><option>L</option><option>XL</option><option>Free</option>
-          </select>
-          <input type="text" name="name" placeholder="Full Name" class="form-control mb-2" required>
-          <input type="tel" name="phone" placeholder="Phone" class="form-control mb-2" required>
-          <textarea name="address" placeholder="Address" class="form-control mb-2" required></textarea>
+          <div class="mb-3">
+            <label class="form-label fw-semibold">Quantity</label>
+            <input type="number" name="quantity" id="modalQuantity" min="1" value="1" class="form-control" required>
+          </div>
 
-          <label><strong>Payment Method:</strong></label><br>
-          <input type="radio" name="payment_method" value="COD" checked> COD
-          <input type="radio" name="payment_method" value="eSewa" style="margin-left: 10px;"> eSewa
+          <div class="mb-3">
+            <label class="form-label fw-semibold">Select Size</label>
+            <select name="size" class="form-control" required>
+              <option value="">-- Select Size --</option>
+              <option>XS</option>
+              <option>S</option>
+              <option>M</option>
+              <option>L</option>
+              <option>XL</option>
+              <option>Free</option>
+            </select>
+          </div>
 
-          <p class="fw-bold mt-2">Total: Rs. <span id="modalTotalAmount"></span></p>
+          <div class="mb-3">
+            <label class="form-label fw-semibold">Select Age Group</label>
+            <select name="age_group" class="form-control" required>
+              <option value="">-- Select Age Group --</option>
+              <option>8-10</option>
+              <option>11-14</option>
+              <option>15-17</option>
+              <option>18-19</option>
+              <option>20-24</option>
+              <option>25-29</option>
+              <option>30-34</option>
+              <option>35-39</option>
+            </select>
+          </div>
+
+
+
+
+          <div class="mb-3">
+            <label class="form-label fw-semibold">Full Name</label>
+            <input type="text" name="name" class="form-control" placeholder="Full Name" required>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label fw-semibold">Phone</label>
+            <input type="tel" name="phone" class="form-control" placeholder="Phone" required>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label fw-semibold">Address</label>
+            <textarea name="address" class="form-control" placeholder="Address" rows="2" required></textarea>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label fw-semibold">Payment Method</label><br>
+            <div class="form-check form-check-inline">
+              <input class="form-check-input" type="radio" name="payment_method" value="COD" id="codOption" checked>
+              <label class="form-check-label" for="codOption">COD</label>
+            </div>
+            <div class="form-check form-check-inline">
+              <input class="form-check-input" type="radio" name="payment_method" value="eSewa" id="esewaOption">
+              <label class="form-check-label" for="esewaOption">eSewa</label>
+            </div>
+          </div>
+
+          <div class="fw-bold text-center mb-3">
+            Total: Rs. <span id="modalTotalAmount"></span>
+          </div>
         </div>
+
         <div class="modal-footer border-0">
-          <button type="submit" class="btn btn-success w-100 fw-bold">Place Order</button>
+          <button type="submit" class="btn w-100 fw-bold"
+            style="background: linear-gradient(135deg, #3c1361, #d63384); color: white; font-size: 16px; padding: 10px; border-radius: 10px;">
+            Place Order
+          </button>
         </div>
       </form>
     </div>
   </div>
 </div>
 
+{#<script>#}
+{#  function formatPrice(num) {#}
+{#    return parseFloat(num).toLocaleString("en-IN", {#}
+{#      minimumFractionDigits: 2,#}
+{#      maximumFractionDigits: 2#}
+{#    });#}
+{#  }#}
+{##}
+{#  function openBuyNowModal(id, name, price) {#}
+{#    document.getElementById('modalProductId').value = id;#}
+{#    document.getElementById('modalProductName').textContent = name;#}
+{#    document.getElementById('modalProductPrice').textContent = price;#}
+{#    document.getElementById('modalBasePrice').value = price;#}
+{#    document.getElementById('modalTotalAmount').textContent = price;#}
+{##}
+{#    document.getElementById('modalQuantity').addEventListener('input', () => {#}
+{#      const qty = parseInt(document.getElementById('modalQuantity').value) || 1;#}
+{#      document.getElementById('modalTotalAmount').textContent = formatPrice(qty * price);#}
+{#    });#}
+{##}
+{#    new bootstrap.Modal(document.getElementById('buyNowModal')).show();#}
+{#  }#}
+{#</script>#}
+{#    <script>#}
+{#  // Auto-hide Toast Messages after 3 seconds#}
+{#  window.onload = function() {#}
+{#    const messages = document.querySelectorAll('.toast-message');#}
+{#    setTimeout(function() {#}
+{#      messages.forEach(function(message) {#}
+{#        message.style.display = 'none';#}
+{#      });#}
+{#    }, 3000);#}
+{#  }#}
+{#</script>#}
 <script>
+  // Format price function
   function formatPrice(num) {
     return parseFloat(num).toLocaleString("en-IN", {
       minimumFractionDigits: 2,
@@ -94,6 +218,7 @@
     });
   }
 
+  // Open Buy Now Modal function
   function openBuyNowModal(id, name, price) {
     document.getElementById('modalProductId').value = id;
     document.getElementById('modalProductName').textContent = name;
@@ -101,12 +226,25 @@
     document.getElementById('modalBasePrice').value = price;
     document.getElementById('modalTotalAmount').textContent = price;
 
+    // Update total amount on quantity change
     document.getElementById('modalQuantity').addEventListener('input', () => {
       const qty = parseInt(document.getElementById('modalQuantity').value) || 1;
       document.getElementById('modalTotalAmount').textContent = formatPrice(qty * price);
     });
 
+    // Show the modal
     new bootstrap.Modal(document.getElementById('buyNowModal')).show();
   }
+
+  // Auto-hide Toast Messages after 3 seconds
+  window.onload = function() {
+    const messages = document.querySelectorAll('.toast-message');
+    setTimeout(function() {
+      messages.forEach(function(message) {
+        message.style.display = 'none';
+      });
+    }, 3000);
+  }
 </script>
+
 {% endblock %}

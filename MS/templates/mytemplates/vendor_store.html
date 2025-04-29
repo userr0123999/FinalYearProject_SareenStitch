@@ -6,28 +6,31 @@
 <h2 style="text-align:center; font-size: 32px; margin: 40px 0 20px;">🛍️ {{ vendor.store_name }} Collection</h2>
 
 <!-- 🔍 Filter Form -->
-<form method="GET" style="text-align:center; margin-bottom: 30px;">
-  <select name="category" style="padding: 8px 12px; border-radius: 6px; border: 1px solid #ccc; margin-right: 10px;">
-    <option value="">All Categories</option>
-    <option value="Saree" {% if request.GET.category == 'Saree' %}selected{% endif %}>Saree</option>
-    <option value="Kurtha" {% if request.GET.category == 'Kurtha' %}selected{% endif %}>Kurtha</option>
-    <option value="Lehenga" {% if request.GET.category == 'Lehenga' %}selected{% endif %}>Lehenga</option>
-  </select>
+<<form method="GET" style="text-align:center; margin-bottom: 30px;">
+    <!-- Category Filter -->
+    <select name="category" style="padding: 8px 12px; border-radius: 6px; border: 1px solid #ccc; margin-right: 10px;">
+        <option value="">All Categories</option>
+        <option value="Saree" {% if request.GET.category == 'Saree' %}selected{% endif %}>Saree</option>
+        <option value="Kurtha" {% if request.GET.category == 'Kurtha' %}selected{% endif %}>Kurtha</option>
+        <option value="Lehenga" {% if request.GET.category == 'Lehenga' %}selected{% endif %}>Lehenga</option>
+    </select>
 
-  <select name="age_group" style="padding: 8px 12px; border-radius: 6px; border: 1px solid #ccc; margin-right: 10px;">
-    <option value="">All Age Groups</option>
-    <option value="8-10" {% if request.GET.age_group == '8-10' %}selected{% endif %}>8–10 Years</option>
-    <option value="11-14" {% if request.GET.age_group == '11-14' %}selected{% endif %}>11–14 Years</option>
-    <option value="15-17" {% if request.GET.age_group == '15-17' %}selected{% endif %}>15–17 Years</option>
-    <option value="18-19" {% if request.GET.age_group == '18-19' %}selected{% endif %}>18–19 Years</option>
-    <option value="20-24" {% if request.GET.age_group == '20-24' %}selected{% endif %}>20–24 Years</option>
-    <option value="25-29" {% if request.GET.age_group == '25-29' %}selected{% endif %}>25–29 Years</option>
-    <option value="30-34" {% if request.GET.age_group == '30-34' %}selected{% endif %}>30–34 Years</option>
-    <option value="35-39" {% if request.GET.age_group == '35-39' %}selected{% endif %}>35–39 Years</option>
-  </select>
+    <!-- Age Group Filter -->
+    <select name="age_group" style="padding: 8px 12px; border-radius: 6px; border: 1px solid #ccc; margin-right: 10px;">
+        <option value="">All Age Groups</option>
+        <option value="8-10" {% if request.GET.age_group == '8-10' %}selected{% endif %}>8–10 Years</option>
+        <option value="11-14" {% if request.GET.age_group == '11-14' %}selected{% endif %}>11–14 Years</option>
+        <option value="15-17" {% if request.GET.age_group == '15-17' %}selected{% endif %}>15–17 Years</option>
+        <option value="18-19" {% if request.GET.age_group == '18-19' %}selected{% endif %}>18–19 Years</option>
+        <option value="20-24" {% if request.GET.age_group == '20-24' %}selected{% endif %}>20–24 Years</option>
+        <option value="25-29" {% if request.GET.age_group == '25-29' %}selected{% endif %}>25–29 Years</option>
+        <option value="30-34" {% if request.GET.age_group == '30-34' %}selected{% endif %}>30–34 Years</option>
+        <option value="35-39" {% if request.GET.age_group == '35-39' %}selected{% endif %}>35–39 Years</option>
+    </select>
 
-  <button type="submit" style="padding: 8px 20px; background: black; color: white; border-radius: 6px;">Filter</button>
+    <button type="submit" style="padding: 8px 20px; background: black; color: white; border-radius: 6px;">Filter</button>
 </form>
+
 
 <!-- Product Grid -->
 <div style="display: flex; flex-wrap: wrap; justify-content: center; gap: 30px; padding: 20px;">

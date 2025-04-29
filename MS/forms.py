@@ -60,27 +60,41 @@ class ProductForm(forms.ModelForm):
             'description': forms.Textarea(attrs={'rows': 3}),
         }
 
+# class VendorProductForm(forms.ModelForm):
+#     age_groups = forms.ModelMultipleChoiceField(
+#         queryset=AgeGroup.objects.all(),
+#         widget=forms.CheckboxSelectMultiple,
+#         required=False
+#     )
+#     sizes = forms.ModelMultipleChoiceField(
+#         queryset=Size.objects.all(),
+#         widget=forms.CheckboxSelectMultiple,
+#         required=False
+#     )
+#
+#     class Meta:
+#         model = Product
+#         fields = '__all__'
 
+from django import forms
+from .models import Product, AgeGroup, Size
 
-# ✅ Vendor Product Form (inherits from ProductForm)
-class VendorProductForm(ProductForm):
-    age_group = forms.ChoiceField(
-        choices=[
-            ('8-10', '8–10 Years'),
-            ('11-14', '11–14 Years'),
-            ('15-17', '15–17 Years'),
-            ('18-19', '18–19 Years'),
-            ('20-24', '20–24 Years'),
-            ('25-29', '25–29 Years'),
-            ('30-34', '30–34 Years'),
-            ('35-39', '35–39 Years'),
-        ],
-        required=True,
-        label='Age Group'
+class VendorProductForm(forms.ModelForm):
+    age_groups = forms.ModelMultipleChoiceField(
+        queryset=AgeGroup.objects.all(),
+        widget=forms.CheckboxSelectMultiple(attrs={'class': 'form-check-input'}),
+        required=False
+    )
+    sizes = forms.ModelMultipleChoiceField(
+        queryset=Size.objects.all(),
+        widget=forms.CheckboxSelectMultiple(attrs={'class': 'form-check-input'}),
+        required=False
     )
 
-    class Meta(ProductForm.Meta):
-        fields = ProductForm.Meta.fields + ['age_group']
+    class Meta:
+        model = Product
+        fields = ['product_name', 'description', 'price', 'category', 'age_groups', 'sizes', 'quantity', 'image']
+
 
 
 

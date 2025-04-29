@@ -2,12 +2,26 @@ from django.contrib import admin
 from .models import *
 from .models import Size, AgeGroup
 
+# @admin.register(Product)
+# class ProductAdmin(admin.ModelAdmin):
+#     list_display = ('product_name', 'category', 'price', 'user', 'is_thrift_display')
+#     list_filter = ('category',)
+#     search_fields = ('product_name', 'category')
+#     fields = ('product_name', 'description', 'category', 'price', 'quantity', 'image', 'user')
+#     filter_horizontal = ('age_groups', 'sizes')
+#
+#     def is_thrift_display(self, obj):
+#         return hasattr(obj, 'thriftproduct')
+#
+#     is_thrift_display.short_description = 'Is Thrift'
+#     is_thrift_display.boolean = True
 @admin.register(Product)
 class ProductAdmin(admin.ModelAdmin):
     list_display = ('product_name', 'category', 'price', 'user', 'is_thrift_display')
     list_filter = ('category',)
     search_fields = ('product_name', 'category')
-    fields = ('product_name', 'description', 'category', 'price', 'quantity', 'image', 'user')
+    fields = ('product_name', 'description', 'category', 'price', 'quantity', 'image', 'user', 'age_groups', 'sizes')  # 🔥 Added here!
+    filter_horizontal = ('age_groups', 'sizes')
 
     def is_thrift_display(self, obj):
         return hasattr(obj, 'thriftproduct')

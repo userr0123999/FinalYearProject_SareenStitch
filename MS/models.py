@@ -48,7 +48,6 @@ class CustomUser(AbstractUser):
 
 from django.conf import settings
 
-
 class Product(models.Model):
     CATEGORY_CHOICES = [
         ('Saree', 'Saree'),
@@ -57,25 +56,15 @@ class Product(models.Model):
         ('Other', 'Other'),
     ]
 
-    AGE_GROUP_CHOICES = [
-        ('8-10', '8-10 Years'),
-        ('11-14', '11-14 Years'),
-        ('15-17', '15-17 Years'),
-        ('18-19', '18-19 Years'),
-        ('20-24', '20-24 Years'),
-        ('25-29', '25-29 Years'),
-        ('30-34', '30-34 Years'),
-        ('35-39', '35-39 Years'),
-    ]
-
     product_name = models.CharField(max_length=255)
     description = models.TextField()
     price = models.DecimalField(max_digits=10, decimal_places=2)
     quantity = models.PositiveIntegerField(default=1)
     category = models.CharField(max_length=255, choices=CATEGORY_CHOICES)
 
-    age_group = models.CharField(max_length=100, blank=True, null=True)
-    size = models.ManyToManyField('Size')  # ✅ new model
+    # 🔥 FIX THIS 🔥
+    age_groups = models.ManyToManyField('AgeGroup', blank=True)
+    sizes = models.ManyToManyField('Size', blank=True)
 
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     image = models.ImageField(upload_to='product_images/', blank=True, null=True)
@@ -84,6 +73,7 @@ class Product(models.Model):
 
     def __str__(self):
         return self.product_name
+
 
 from django.db import models
 from django.conf import settings

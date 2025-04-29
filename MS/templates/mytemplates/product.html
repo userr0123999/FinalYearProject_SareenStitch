@@ -49,58 +49,116 @@
 </div>
 
 
-<!-- ✅ Buy Now Modal -->
-<div class="modal fade" id="buyNowModal" tabindex="-1">
+{#<!-- ✅ Buy Now Modal -->#}
+{#<div class="modal fade" id="buyNowModal" tabindex="-1">#}
+{#  <div class="modal-dialog modal-dialog-centered">#}
+{#    <div class="modal-content p-4 shadow rounded-4">#}
+{#      <div class="modal-header border-0">#}
+{#        <h5 class="modal-title fw-bold">🛍️ Buy Now</h5>#}
+{#        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>#}
+{#      </div>#}
+{#      <form method="POST" action="{% url 'buy_now_checkout' %}">#}
+{#        {% csrf_token %}#}
+{#        <input type="hidden" name="product_id" id="modalProductId">#}
+{#        <input type="hidden" id="modalBasePrice">#}
+{#        <div class="modal-body">#}
+{#          <p><strong id="modalProductName"></strong> - Rs. <span id="modalProductPrice"></span></p>#}
+{##}
+{#          <label>Quantity:</label>#}
+{#          <input type="number" class="form-control mb-2" name="quantity" id="modalQuantity" min="1" value="1" required>#}
+{##}
+{#          <label>Size:</label>#}
+{#          <select name="size" class="form-control mb-2" required>#}
+{#            <option value="XS">XS</option><option value="S">S</option><option value="M">M</option>#}
+{#            <option value="L">L</option><option value="XL">XL</option>#}
+{#          </select>#}
+{##}
+{#          <label>Full Name:</label>#}
+{#          <input type="text" class="form-control mb-2" name="name" required>#}
+{##}
+{#          <label>Phone:</label>#}
+{#          <input type="tel" class="form-control mb-2" name="phone" required>#}
+{##}
+{#          <label>Address:</label>#}
+{#          <textarea class="form-control mb-2" name="address" required></textarea>#}
+{##}
+{#          <label>Payment Method:</label><br>#}
+{#          <div class="form-check form-check-inline">#}
+{#            <input class="form-check-input" type="radio" name="payment_method" value="COD" checked>#}
+{#            <label class="form-check-label">Cash on delivery</label>#}
+{#          </div>#}
+{#          <div class="form-check form-check-inline">#}
+{#            <input class="form-check-input" type="radio" name="payment_method" value="eSewa">#}
+{#            <label class="form-check-label">eSewa</label>#}
+{#          </div>#}
+{##}
+{#          <p class="fw-bold text-success mt-3">Total: Rs. <span id="modalTotalAmount"></span></p>#}
+{#        </div>#}
+{#        <div class="modal-footer border-0">#}
+{#          <button type="button" class="btn btn-success w-100 fw-bold" onclick="showConfirmation()">🛒 Place Order</button>#}
+{#        </div>#}
+{#      </form>#}
+{#    </div>#}
+{#  </div>#}
+{#</div>#}
+
+<div class="modal fade" id="buyNowModal" tabindex="-1" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered">
-    <div class="modal-content p-4 shadow rounded-4">
-      <div class="modal-header border-0">
-        <h5 class="modal-title fw-bold">🛍️ Buy Now</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+    <div class="modal-content p-4 shadow rounded-4" style="background: #fff; border-radius: 12px; padding: 20px; box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);">
+      <div class="modal-header border-0" style="text-align: center; background-color: #3c1361; color: #fff; padding: 20px 0;">
+        <h5 class="modal-title fw-bold" style="font-size: 28px; font-weight: bold;">🛍️ Buy Now</h5>
+        <button type="button" class="btn-close" style="background-color: transparent; border: none; color: #fff; font-size: 20px;" data-bs-dismiss="modal"></button>
       </div>
       <form method="POST" action="{% url 'buy_now_checkout' %}">
         {% csrf_token %}
         <input type="hidden" name="product_id" id="modalProductId">
         <input type="hidden" id="modalBasePrice">
-        <div class="modal-body">
+        <div class="modal-body" style="padding: 20px 0; font-size: 16px;">
           <p><strong id="modalProductName"></strong> - Rs. <span id="modalProductPrice"></span></p>
 
-          <label>Quantity:</label>
-          <input type="number" class="form-control mb-2" name="quantity" id="modalQuantity" min="1" value="1" required>
+          <label style="font-weight: 600; color: #444; margin-bottom: 8px; font-size: 16px;">Quantity:</label>
+          <input type="number" class="form-control mb-2" name="quantity" id="modalQuantity" min="1" value="1" required style="border-radius: 6px; border: 1px solid #ddd; padding: 10px; font-size: 14px; margin-bottom: 15px;">
 
-          <label>Size:</label>
-          <select name="size" class="form-control mb-2" required>
-            <option value="XS">XS</option><option value="S">S</option><option value="M">M</option>
-            <option value="L">L</option><option value="XL">XL</option>
+          <label style="font-weight: 600; color: #444; margin-bottom: 8px; font-size: 16px;">Size:</label>
+          <select name="size" class="form-control mb-2" required style="border-radius: 6px; border: 1px solid #ddd; padding: 10px; font-size: 14px; margin-bottom: 15px;">
+            <option value="XS">XS</option>
+            <option value="S">S</option>
+            <option value="M">M</option>
+            <option value="L">L</option>
+            <option value="XL">XL</option>
           </select>
 
-          <label>Full Name:</label>
-          <input type="text" class="form-control mb-2" name="name" required>
+          <label style="font-weight: 600; color: #444; margin-bottom: 8px; font-size: 16px;">Full Name:</label>
+          <input type="text" class="form-control mb-2" name="name" required style="border-radius: 6px; border: 1px solid #ddd; padding: 10px; font-size: 14px; margin-bottom: 15px;">
 
-          <label>Phone:</label>
-          <input type="tel" class="form-control mb-2" name="phone" required>
+          <label style="font-weight: 600; color: #444; margin-bottom: 8px; font-size: 16px;">Phone:</label>
+          <input type="tel" class="form-control mb-2" name="phone" required style="border-radius: 6px; border: 1px solid #ddd; padding: 10px; font-size: 14px; margin-bottom: 15px;">
 
-          <label>Address:</label>
-          <textarea class="form-control mb-2" name="address" required></textarea>
+          <label style="font-weight: 600; color: #444; margin-bottom: 8px; font-size: 16px;">Address:</label>
+          <textarea class="form-control mb-2" name="address" required style="border-radius: 6px; border: 1px solid #ddd; padding: 10px; font-size: 14px; margin-bottom: 15px;"></textarea>
 
-          <label>Payment Method:</label><br>
+          <label style="font-weight: 600; color: #444; margin-bottom: 8px; font-size: 16px;">Payment Method:</label><br>
           <div class="form-check form-check-inline">
             <input class="form-check-input" type="radio" name="payment_method" value="COD" checked>
-            <label class="form-check-label">Cash on delivery</label>
+            <label class="form-check-label" style="font-size: 14px; color: #444;">Cash on delivery</label>
           </div>
           <div class="form-check form-check-inline">
             <input class="form-check-input" type="radio" name="payment_method" value="eSewa">
-            <label class="form-check-label">eSewa</label>
+            <label class="form-check-label" style="font-size: 14px; color: #444;">eSewa</label>
           </div>
 
-          <p class="fw-bold text-success mt-3">Total: Rs. <span id="modalTotalAmount"></span></p>
+          <p class="fw-bold text-success mt-3" style="font-size: 20px; color: #28a745;">Total: Rs. <span id="modalTotalAmount"></span></p>
         </div>
         <div class="modal-footer border-0">
-          <button type="button" class="btn btn-success w-100 fw-bold" onclick="showConfirmation()">🛒 Place Order</button>
+          <button type="button" class="btn btn-success w-100 fw-bold" onclick="showConfirmation()" style="background: #d63384; color: #fff; font-weight: bold; padding: 12px; border-radius: 10px; border: none;">🛒 Place Order</button>
         </div>
       </form>
     </div>
   </div>
 </div>
+
+
+
 
 <!-- ✅ Confirm Modal -->
 <div class="modal fade" id="confirmOrderModal" tabindex="-1">

@@ -41,38 +41,99 @@
   </div>
 </div>
 
-<!-- ✅ Buy Now Modal from previous setup -->
-<div class="modal fade" id="buyNowModal" tabindex="-1" aria-hidden="true">
+{#<!-- ✅ Buy Now Modal from previous setup -->#}
+{#<div class="modal fade" id="buyNowModal" tabindex="-1" aria-hidden="true">#}
+{#  <div class="modal-dialog modal-dialog-centered">#}
+{#    <div class="modal-content p-4 shadow rounded-4">#}
+{#      <div class="modal-header border-0">#}
+{#        <h5 class="modal-title fw-bold">🛍️ Buy Now</h5>#}
+{#        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>#}
+{#      </div>#}
+{#      <form method="POST" action="{% url 'buy_now_checkout' %}">#}
+{#        {% csrf_token %}#}
+{#        <input type="hidden" name="product_id" id="modalProductId">#}
+{#        <input type="hidden" id="modalBasePrice">#}
+{#        <div class="modal-body">#}
+{#          <p><strong id="modalProductName"></strong> - Rs. <span id="modalProductPrice"></span></p>#}
+{##}
+{#          <input type="number" name="quantity" id="modalQuantity" min="1" value="1" class="form-control mb-2" placeholder="Quantity" required>#}
+{#          <select name="size" class="form-control mb-2" required>#}
+{#            <option value="">Select Size</option>#}
+{#            <option>S</option><option>M</option><option>L</option><option>XL</option>#}
+{#          </select>#}
+{#          <input type="text" name="name" placeholder="Full Name" class="form-control mb-2" required>#}
+{#          <input type="tel" name="phone" placeholder="Phone" class="form-control mb-2" required>#}
+{#          <textarea name="address" placeholder="Address" class="form-control mb-2" required></textarea>#}
+{##}
+{#          <label><strong>Payment Method:</strong></label><br>#}
+{#          <input type="radio" name="payment_method" value="COD" checked> COD#}
+{#          <input type="radio" name="payment_method" value="eSewa" style="margin-left: 10px;"> eSewa#}
+{##}
+{#          <p class="fw-bold mt-2">Total: Rs. <span id="modalTotalAmount"></span></p>#}
+{#        </div>#}
+{#        <div class="modal-footer border-0">#}
+{#          <button type="submit" class="btn btn-success w-100 fw-bold">Place Order</button>#}
+{#        </div>#}
+{#      </form>#}
+{#    </div>#}
+{#  </div>#}
+{#</div>#}
+
+    <div class="modal fade" id="buyNowModal" tabindex="-1" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered">
-    <div class="modal-content p-4 shadow rounded-4">
-      <div class="modal-header border-0">
-        <h5 class="modal-title fw-bold">🛍️ Buy Now</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+    <div class="modal-content p-4 shadow rounded-4" style="background: #fff; border-radius: 12px; padding: 20px; box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);">
+      <div class="modal-header border-0" style="text-align: center; background-color: #3c1361; color: #fff; padding: 20px 0;">
+        <h5 class="modal-title fw-bold" style="font-size: 28px; font-weight: bold;">🛍️ Buy Now</h5>
+        <button type="button" class="btn-close" style="background-color: transparent; border: none; color: #fff; font-size: 20px;" data-bs-dismiss="modal"></button>
       </div>
       <form method="POST" action="{% url 'buy_now_checkout' %}">
         {% csrf_token %}
         <input type="hidden" name="product_id" id="modalProductId">
         <input type="hidden" id="modalBasePrice">
-        <div class="modal-body">
+        <div class="modal-body" style="padding: 20px 0; font-size: 16px;">
           <p><strong id="modalProductName"></strong> - Rs. <span id="modalProductPrice"></span></p>
 
-          <input type="number" name="quantity" id="modalQuantity" min="1" value="1" class="form-control mb-2" placeholder="Quantity" required>
-          <select name="size" class="form-control mb-2" required>
-            <option value="">Select Size</option>
-            <option>S</option><option>M</option><option>L</option><option>XL</option>
-          </select>
-          <input type="text" name="name" placeholder="Full Name" class="form-control mb-2" required>
-          <input type="tel" name="phone" placeholder="Phone" class="form-control mb-2" required>
-          <textarea name="address" placeholder="Address" class="form-control mb-2" required></textarea>
+          <!-- Quantity Input -->
+          <input type="number" name="quantity" id="modalQuantity" min="1" value="1" class="form-control mb-2" placeholder="Quantity" required
+                 style="border-radius: 6px; border: 1px solid #ddd; padding: 10px; font-size: 14px; margin-bottom: 15px;">
 
-          <label><strong>Payment Method:</strong></label><br>
-          <input type="radio" name="payment_method" value="COD" checked> COD
+          <!-- Size Select -->
+          <select name="size" class="form-control mb-2" required
+                  style="border-radius: 6px; border: 1px solid #ddd; padding: 10px; font-size: 14px; margin-bottom: 15px;">
+            <option value="">Select Size</option>
+            <option>S</option>
+            <option>M</option>
+            <option>L</option>
+            <option>XL</option>
+          </select>
+
+          <!-- Full Name Input -->
+          <input type="text" name="name" placeholder="Full Name" class="form-control mb-2" required
+                 style="border-radius: 6px; border: 1px solid #ddd; padding: 10px; font-size: 14px; margin-bottom: 15px;">
+
+          <!-- Phone Input -->
+          <input type="tel" name="phone" placeholder="Phone" class="form-control mb-2" required
+                 style="border-radius: 6px; border: 1px solid #ddd; padding: 10px; font-size: 14px; margin-bottom: 15px;">
+
+          <!-- Address Textarea -->
+          <textarea name="address" placeholder="Address" class="form-control mb-2" required
+                    style="border-radius: 6px; border: 1px solid #ddd; padding: 10px; font-size: 14px; margin-bottom: 15px;"></textarea>
+
+          <!-- Payment Method Radio Buttons -->
+          <label style="font-weight: 600; color: #444; margin-bottom: 8px; font-size: 16px;"><strong>Payment Method:</strong></label><br>
+          <input type="radio" name="payment_method" value="COD" checked
+                 style="margin-right: 10px;"> COD
           <input type="radio" name="payment_method" value="eSewa" style="margin-left: 10px;"> eSewa
 
-          <p class="fw-bold mt-2">Total: Rs. <span id="modalTotalAmount"></span></p>
+          <!-- Total Amount Display -->
+          <p class="fw-bold text-success mt-3" style="font-size: 20px; color: #28a745;">Total: Rs. <span id="modalTotalAmount"></span></p>
         </div>
         <div class="modal-footer border-0">
-          <button type="submit" class="btn btn-success w-100 fw-bold">Place Order</button>
+          <!-- Place Order Button -->
+          <button type="submit" class="btn w-100 fw-bold"
+                  style="background: #d63384; color: white; font-weight: bold; padding: 12px; border-radius: 10px; border: none;">
+            🛒 Place Order
+          </button>
         </div>
       </form>
     </div>

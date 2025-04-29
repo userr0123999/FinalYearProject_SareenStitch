@@ -10,6 +10,11 @@ path('login/', views.login_view, name='login'),
 path('logout/', views.logout_view, name='logout'),
 path('register/', views.register, name='register'),
 path('forgotpassword/', views.forgotpassword, name='forgotpassword'),
+
+    # required for reset to work after email
+path('reset/<uidb64>/<token>/', views.custom_reset_password_confirm, name='password_reset_confirm'),
+
+
 path('profile/', views.profile_view, name='profile'),
 path('search/', views.search_products, name='search_products'),
 path('your-bidding/', views.bidding_history, name='bidding_history'),

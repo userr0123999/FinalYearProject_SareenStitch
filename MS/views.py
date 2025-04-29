@@ -1,6 +1,11 @@
+from django.contrib.auth.tokens import default_token_generator
+from django.core.mail import send_mail
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import authenticate, login as auth_login, logout as auth_logout
 from django.contrib.auth.decorators import login_required, user_passes_test
+from django.urls import reverse_lazy
+from django.utils.encoding import force_bytes
+from django.utils.http import urlsafe_base64_encode
 from django.views.decorators.http import require_POST
 
 from .forms import CustomUserRegistrationForm, LoginForm, ProductForm, ThriftProductForm, ThriftExtraForm, \
@@ -25,7 +30,7 @@ def start(request):
 def aboutus(request):
     return render(request, 'mytemplates/aboutus.html')
 
-from django.db.models import Q
+from django.db.models import Q, Max
 from .models import Product
 
 from django.db.models import Q
@@ -391,8 +396,52 @@ def contact(request):
     return render(request, 'mytemplates/contact.html')
 
 
+# def forgotpassword(request):
+#     return render(request, 'mytemplates/forgotpassword.html')
 def forgotpassword(request):
-    return render(request, 'mytemplates/forgotpassword.html')
+    if request.method == 'POST':
+        form = PasswordResetForm(request.POST)
+        if form.is_valid():
+            email = form.cleaned_data['email']
+            users = User.objects.filter(email=email)
+            if users.exists():
+                for user in users:
+                    subject = "Password Reset - SareenStitch"
+                    uid = urlsafe_base64_encode(force_bytes(user.pk))
+                    token = default_token_generator.make_token(user)
+                    reset_url = request.build_absolute_uri(
+                        reverse_lazy('password_reset_confirm', kwargs={'uidb64': uid, 'token': token})
+                    )
+                    message = f"Hi {user.username},\n\nClick the link below to reset your password:\n{reset_url}"
+                    send_mail(subject, message, 'noreply@sareenstitch.com', [user.email])
+                messages.success(request, "Password reset link sent! Please check your email.")
+            else:
+                messages.error(request, "No user found with that email.")
+    else:
+        form = PasswordResetForm()
+    return render(request, 'mytemplates/forgotpassword.html', {'form': form})
+
+
+def custom_reset_password_confirm(request, uidb64, token):
+    try:
+        uid = force_str(urlsafe_base64_decode(uidb64))
+        user = DjangoUser.objects.get(pk=uid)
+    except (TypeError, ValueError, OverflowError, DjangoUser.DoesNotExist):
+        user = None
+
+    if user and default_token_generator.check_token(user, token):
+        if request.method == 'POST':
+            form = SetPasswordForm(user, request.POST)
+            if form.is_valid():
+                form.save()
+                messages.success(request, 'Your password has been reset successfully.')
+                return redirect('login')
+        else:
+            form = SetPasswordForm(user)
+        return render(request, 'mytemplates/password_reset_form.html', {'form': form})
+    else:
+        messages.error(request, 'The reset link is invalid or has expired.')
+        return redirect('forgotpassword')
 
 
 #--------biddding------------------------------------------------
@@ -693,7 +742,7 @@ def product(request):
 
 
 # ---------- AUTH ----------
-from django.contrib.auth.forms import AuthenticationForm
+from django.contrib.auth.forms import AuthenticationForm, PasswordResetForm
 from django.contrib.auth import authenticate, login as auth_login
 
 
@@ -926,11 +975,13 @@ def remove_cart_item(request, item_id):
     return redirect('cart')
 
 
-
-from .models import Coupon, Order
+from .models import Coupon, Order, CartItem
 from django.utils import timezone
 from decimal import Decimal
+from django.contrib import messages
+from django.shortcuts import redirect
 
+@login_required
 def checkout(request):
     if request.method == "POST":
         coupon_code = request.POST.get('coupon', '').strip()
@@ -958,29 +1009,40 @@ def checkout(request):
             except Coupon.DoesNotExist:
                 messages.warning(request, "Invalid or expired coupon.")
 
-        # Create order
-        order = Order.objects.create(
-            user=request.user,
-            total_price=final_total,
-            name=name,
-            phone=phone,
-            address=address,
-            payment_method=payment_method
-        )
+        # ✅ Create orders for each cart item and decrease stock
+        for item in cart_items:
+            if item.product.quantity >= item.quantity:
+                # Decrease stock
+                item.product.quantity -= item.quantity
+                item.product.save()
 
-        # Link coupon to order and mark as used
+                # Create order for each product
+                Order.objects.create(
+                    user=request.user,
+                    product=item.product,
+                    quantity=item.quantity,
+                    total_price=item.product.price * item.quantity,
+                    status='pending',
+                    payment_method=payment_method,
+                )
+            else:
+                messages.error(request, f"Not enough stock for {item.product.product_name}.")
+                return redirect('cart')
+
+        # If coupon applied, mark it used
         if coupon_obj:
-            coupon_obj.order = order
             coupon_obj.is_used = True
             coupon_obj.save()
 
-        # Clear cart
+        # Clear cart after successful order
         cart_items.delete()
 
-        messages.success(request, f"Order placed! Final price: Rs. {final_total:.2f}")
-        return redirect('cart')
+        messages.success(request, f"Order placed successfully! Final amount: Rs. {final_total:.2f}")
+        return redirect('user_orders')
 
     return redirect('cart')
+
+
 
 
 # ---------- WISHLIST ----------
@@ -1007,9 +1069,7 @@ def remove_wishlist_item(request, item_id):
     return redirect('wishlist')
 
 
-# ---------- ORDER ----------
-from django.contrib.auth.decorators import login_required
-
+#
 # @login_required
 # def buy_now_checkout(request):
 #     if request.method == 'POST':
@@ -1022,14 +1082,28 @@ from django.contrib.auth.decorators import login_required
 #             address = request.POST.get('address')
 #             payment_method = request.POST.get('payment_method')
 #
+#             # Limit quantity to 5
+#             if quantity > 5:
+#                 messages.error(request, "You cannot order more than 5 units of a product.")
+#                 return redirect('product')
+#
 #             product = get_object_or_404(Product, id=product_id)
 #
 #             if quantity < 1:
 #                 messages.error(request, "Quantity must be at least 1.")
 #                 return redirect('product')
 #
+#             # Ensure there's enough stock
+#             if product.quantity >= quantity:
+#                 product.quantity -= quantity  # Decrease the quantity
+#                 product.save()  # Save the updated product quantity
+#             else:
+#                 messages.error(request, f"Not enough stock for {product.product_name}.")
+#                 return redirect('product')
+#
 #             total_price = product.price * quantity
 #
+#             # Create the order
 #             Order.objects.create(
 #                 user=request.user,              # ✅ FK to authenticated user
 #                 product=product,
@@ -1047,16 +1121,6 @@ from django.contrib.auth.decorators import login_required
 #
 #     return redirect('product')
 
-from django.shortcuts import render, redirect
-from django.contrib import messages
-from .models import Product, Order  # import your models
-from django.contrib.auth.decorators import login_required
-
-# ---------- ORDER ----------
-from django.shortcuts import render, redirect, get_object_or_404
-from django.contrib import messages
-from django.contrib.auth.decorators import login_required
-from .models import Product, Order
 
 @login_required
 def buy_now_checkout(request):
@@ -1070,7 +1134,7 @@ def buy_now_checkout(request):
             address = request.POST.get('address')
             payment_method = request.POST.get('payment_method')
 
-            # Limit quantity to 5
+            # Limit quantity
             if quantity > 5:
                 messages.error(request, "You cannot order more than 5 units of a product.")
                 return redirect('product')
@@ -1081,23 +1145,24 @@ def buy_now_checkout(request):
                 messages.error(request, "Quantity must be at least 1.")
                 return redirect('product')
 
-            # Ensure there's enough stock
+            # ✅ Check and Decrease stock
             if product.quantity >= quantity:
-                product.quantity -= quantity  # Decrease the quantity
-                product.save()  # Save the updated product quantity
+                product.quantity -= quantity
+                product.save()
             else:
                 messages.error(request, f"Not enough stock for {product.product_name}.")
                 return redirect('product')
 
             total_price = product.price * quantity
 
-            # Create the order
+            # ✅ Create Order
             Order.objects.create(
-                user=request.user,              # ✅ FK to authenticated user
+                user=request.user,
                 product=product,
                 quantity=quantity,
                 total_price=total_price,
                 status='pending',
+                payment_method=payment_method,  # ✅
             )
 
             messages.success(request, "Order placed successfully!")
@@ -1108,6 +1173,7 @@ def buy_now_checkout(request):
             return redirect('product')
 
     return redirect('product')
+
 
 @login_required
 def user_orders(request):
@@ -1133,34 +1199,6 @@ def add_to_cart(request, product_id):
     messages.success(request, f"{product.product_name} added to cart.")
     return redirect('cart')
 
-
-@login_required
-def checkout(request):
-    if request.method == 'POST':
-        name = request.POST.get("name")
-        phone = request.POST.get("phone")
-        address = request.POST.get("address")
-        payment_method = request.POST.get("payment_method")
-
-        cart_items = CartItem.objects.filter(user=request.user)
-        if not cart_items.exists():
-            messages.error(request, "Your cart is empty.")
-            return redirect('cart')
-
-        for item in cart_items:
-            Order.objects.create(
-                user=request.user,
-                product=item.product,
-                quantity=item.quantity,
-                total_price=item.product.price * item.quantity,
-                status='pending'
-            )
-
-        cart_items.delete()
-        messages.success(request, "Your order has been placed successfully!")
-        return redirect('user_orders')
-
-    return redirect('cart')
 
 
 @login_required
@@ -1277,17 +1315,46 @@ def vendor_product_form(request, pk=None):
         'title': title
     })
 
+# from django.shortcuts import get_object_or_404
+#
+# def vendor_product_detail(request, product_id):
+#     product = get_object_or_404(Product.objects.prefetch_related('age_groups', 'sizes'), id=product_id)
+#     vendor_id = product.user.id if product.user.is_vendor else None
+#
+#     return render(request, 'mytemplates/vendor_product_details.html', {
+#         'product': product,
+#         'vendor_id': vendor_id,
+#     })
+from django.contrib import messages
+from django.shortcuts import get_object_or_404, render
+from .models import Product
+
+from django.contrib import messages
+from django.shortcuts import get_object_or_404, render
+from .models import Product
+
 
 def vendor_product_detail(request, product_id):
-    product = get_object_or_404(Product, id=product_id)
+    product = get_object_or_404(Product.objects.prefetch_related('age_groups', 'sizes'), id=product_id)
     vendor_id = product.user.id if product.user.is_vendor else None
+
+    # Handle the form submission to check the age group
+    if request.method == 'POST':
+        selected_age_group = request.POST.get('age_group')
+
+        print(f"Selected Age Group: {selected_age_group}")
+
+        # Check if the selected age group is valid for the product
+        if selected_age_group not in [age_group.name for age_group in product.age_groups.all()]:
+            print("Invalid Age Group Selected!")
+            messages.error(request, "Sorry, this product is not available for the selected Age Group.")
+        else:
+            print("Valid Age Group Selected!")
 
     return render(request, 'mytemplates/vendor_product_details.html', {
         'product': product,
         'vendor_id': vendor_id,
     })
-
-
 
 
 # Vendor Delete Product
@@ -1320,13 +1387,27 @@ def vendor_orders(request):
 
 
 
+# @login_required
+# def vendor_add_product(request):
+#     form = ProductForm(request.POST or None, request.FILES or None)
+#     if request.method == 'POST' and form.is_valid():
+#         product = form.save(commit=False)
+#         product.user = request.user
+#         product.save()
+#         messages.success(request, "Product added successfully!")
+#         return redirect('vendor_products')
+#     return render(request, 'mytemplates/vendor_product_form.html', {'form': form, 'title': 'Add Product'})
+
+from .forms import VendorProductForm
+
 @login_required
 def vendor_add_product(request):
-    form = ProductForm(request.POST or None, request.FILES or None)
+    form = VendorProductForm(request.POST or None, request.FILES or None)
     if request.method == 'POST' and form.is_valid():
         product = form.save(commit=False)
         product.user = request.user
         product.save()
+        form.save_m2m()  # VERY IMPORTANT because of ManyToManyField
         messages.success(request, "Product added successfully!")
         return redirect('vendor_products')
     return render(request, 'mytemplates/vendor_product_form.html', {'form': form, 'title': 'Add Product'})
@@ -1345,7 +1426,46 @@ def vendor_edit_product(request, pk):
         form = VendorProductForm(instance=product)
     return render(request, 'mytemplates/vendor_product_form.html', {'form': form, 'title': 'Edit Product'})
 
-from .models import AgeGroup
+# from .models import AgeGroup
+#
+# def vendor_store(request, vendor_id):
+#     vendor = get_object_or_404(CustomUser, id=vendor_id, is_vendor=True)
+#     products = Product.objects.filter(user=vendor)
+#
+#     # Filters
+#     category = request.GET.get('category')
+#     age_group = request.GET.get('age_group')
+#
+#     if category:
+#         products = products.filter(category__iexact=category)
+#
+#     if age_group:
+#         try:
+#             age_group_obj = AgeGroup.objects.get(label=age_group)
+#             products = products.filter(age_group__label=age_group)
+#         except AgeGroup.DoesNotExist:
+#             products = Product.objects.none()
+#
+#     # Ratings
+#     for product in products:
+#         product.avg_rating = product.rating_set.aggregate(avg=Avg('rating'))['avg']
+#         product.latest_review = product.rating_set.last().review if product.rating_set.exists() else None
+#
+#     all_ratings = []
+#     for product in products:
+#         ratings = product.rating_set.values_list('rating', flat=True)
+#         all_ratings.extend(ratings)
+#
+#     vendor_avg_rating = round(sum(all_ratings) / len(all_ratings), 1) if all_ratings else None
+#
+#     context = {
+#         'vendor': vendor,
+#         'products': products,
+#         'vendor_avg_rating': vendor_avg_rating,
+#     }
+#     return render(request, 'mytemplates/vendor_store.html', context)
+from django.db.models import Avg
+from .models import AgeGroup, Product
 
 def vendor_store(request, vendor_id):
     vendor = get_object_or_404(CustomUser, id=vendor_id, is_vendor=True)
@@ -1360,21 +1480,20 @@ def vendor_store(request, vendor_id):
 
     if age_group:
         try:
+            # Filter by Age Group
             age_group_obj = AgeGroup.objects.get(label=age_group)
-            products = products.filter(age_group__label=age_group)
+            products = products.filter(age_groups__label=age_group_obj.label)
         except AgeGroup.DoesNotExist:
             products = Product.objects.none()
 
-    # Ratings
-    for product in products:
-        product.avg_rating = product.rating_set.aggregate(avg=Avg('rating'))['avg']
-        product.latest_review = product.rating_set.last().review if product.rating_set.exists() else None
+    # Ratings: Efficient calculation of avg_rating and latest review for all products
+    products = products.annotate(
+        avg_rating=Avg('rating__rating'),
+        latest_review=Max('rating__timestamp')  # Latest review date (optional)
+    )
 
-    all_ratings = []
-    for product in products:
-        ratings = product.rating_set.values_list('rating', flat=True)
-        all_ratings.extend(ratings)
-
+    # Calculate vendor's average rating
+    all_ratings = [rating for product in products for rating in product.rating_set.values_list('rating', flat=True)]
     vendor_avg_rating = round(sum(all_ratings) / len(all_ratings), 1) if all_ratings else None
 
     context = {
